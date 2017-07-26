@@ -1,0 +1,10 @@
+# Linux
+*.swp
+*.bak
+*~
+
+# spec file
+BUILD/
+BUILDROOT/
+RPMS/
+SRPMS/
