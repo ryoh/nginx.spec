@@ -9,11 +9,11 @@
 %define         nginx_confdir       %{_sysconfdir}/nginx
 %define         nginx_tempdir       %{_sharedstatedir}/nginx
 %define         nginx_logdir        %{_localstatedir}/log/nginx
-%define         nginx_rundir        %{_localstatedir}/run
+%define         nginx_rundir        %{_rundir}
 %define         nginx_lockdir       %{_localstatedir}/lock/subsys
 %define         nginx_webroot       %{nginx_home}/html
 
-%define         pkg_name            nginx
+%define         pkg_name            nginx-mainline
 %define         main_version        1.13.3
 %define         main_release        1%{?dist}
 
@@ -26,13 +26,13 @@
 Name:           %{pkg_name}
 Version:        %{main_version}
 Release:        %{main_release}
-Summary:        A high performance web server and reverse
+Summary:        A high performance web server and reverse proxy
 Group:          System Environment/Daemons 
 License:        BSD
 URL:            https://nginx.net
 
-Source0:        https://nginx.org/download/%{pkg_name}-%{main_version}.tar.gz
-Source1:        https://nginx.org/download/%{pkg_name}-%{main_version}.tar.gz.asc
+Source0:        https://nginx.org/download/nginx-%{main_version}.tar.gz
+Source1:        https://nginx.org/download/nginx-%{main_version}.tar.gz.asc
 Source100:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
 
@@ -42,17 +42,17 @@ Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.
 
 
 %prep
-%setup -q -a 100
+%setup -q -n nginx-%{version} -a 100
 
 
 %build
 CFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags)}"; export CFLAGS;
-LDFLAGS="${LDFLAGS:-$RPM_LD_FLAGS -Wl,-E}"; export LDFLAGS;
+LDFLAGS="${LDFLAGS:-%{__global_ldflags} -Wl,-E}"; export LDFLAGS;
 
 pushd %{ssl_pkgname}
 ./configure
 
-%{make_build}
+%make_build
 popd
 
 ./configure \
@@ -110,14 +110,14 @@ popd
   --with-stream_geoip_module=dynamic \
   --with-stream_ssl_preread_module \
 
-%{make_build}
+%make_build
 
 
 %install
 # Install
 [[ -d %{buildroot} ]] && rm -rf "%{buildroot}"
 %{__mkdir} -p "%{buildroot}"
-%{__make} install DESTDIR=%{buildroot} INSTALLDIRS=vendor
+%make_install INSTALLDIRS=vendor
 
 find %{buildroot} -type f -name .packlist -exec rm -f '{}' \;
 find %{buildroot} -type f -name perllocal.pod -exec rm -f '{}' \;
@@ -138,7 +138,7 @@ install -p -d -m 0700 %{buildroot}%{nginx_tempdir}/uwsgi
 install -p -d -m 0700 %{buildroot}%{nginx_tempdir}/scgi
 
 %clean
-#%{__rm} -rf "%{buildroot}"
+%{__rm} -rf "%{buildroot}"
 
 
 %files
