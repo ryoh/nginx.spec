@@ -129,13 +129,13 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 %{__rm} -f %{buildroot}%{nginx_confdir}/*.default
 
 # Create nginx temporary directories
-install -p -d -m 0700 %{buildroot}%{nginx_home}
-install -p -d -m 0700 %{buildroot}%{nginx_tempdir}
-install -p -d -m 0700 %{buildroot}%{nginx_tempdir}/client_body
-install -p -d -m 0700 %{buildroot}%{nginx_tempdir}/proxy
-install -p -d -m 0700 %{buildroot}%{nginx_tempdir}/fastcgi
-install -p -d -m 0700 %{buildroot}%{nginx_tempdir}/uwsgi
-install -p -d -m 0700 %{buildroot}%{nginx_tempdir}/scgi
+%{__install} -p -d -m 0700 %{buildroot}%{nginx_home}
+%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}
+%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/client_body
+%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/proxy
+%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/fastcgi
+%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/uwsgi
+%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/scgi
 
 %clean
 %{__rm} -rf "%{buildroot}"
