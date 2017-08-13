@@ -14,7 +14,7 @@
 %define         nginx_webroot       %{nginx_home}/html
 
 %define         pkg_name            nginx-mainline
-%define         main_version        1.13.3
+%define         main_version        1.13.4
 %define         main_release        1%{?dist}
 
 %define         ssl_name            libressl
@@ -35,6 +35,17 @@ Source0:        https://nginx.org/download/nginx-%{main_version}.tar.gz
 Source1:        https://nginx.org/download/nginx-%{main_version}.tar.gz.asc
 Source100:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
+
+Requires(pre):  shadow-utils
+%systemd_requires
+BuildRequires:  systemd
+
+BuildRequires:  make gcc automake autoconf libtool
+BuildRequires:  zlib-devel pcre-devel
+BuildRequires:  libxml2-devel libxslt-devel
+BuildRequires:  perl(ExtUtils::Embed)
+BuildRequires:  gd-devel
+BuildRequires:  GeoIP-devel
 
 
 %description
@@ -174,5 +185,9 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 
 
 %changelog
+* Sun Aug 13 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-1
+- Bumpup 1.13.4-1
+* Sun Aug 13 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.3-1
+- Add Requires/BuildRequires
 * Wed Jul 26 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.3-1
 - first created
