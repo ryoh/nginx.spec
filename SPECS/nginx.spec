@@ -42,14 +42,70 @@ BuildRequires:  systemd
 
 BuildRequires:  make gcc automake autoconf libtool
 BuildRequires:  zlib-devel pcre-devel
-BuildRequires:  libxml2-devel libxslt-devel
-BuildRequires:  perl(ExtUtils::Embed)
-BuildRequires:  gd-devel
-BuildRequires:  GeoIP-devel
 
 
 %description
-nginx [engine x] is an HTTP and reverse proxy server, a mail proxy server, and a generic TCP/UDP proxy server, originally written by Igor Sysoev.
+nginx [engine x] is an HTTP and reverse proxy server, a mail proxy server,
+and a generic TCP/UDP proxy server, originally written by Igor Sysoev.
+
+
+%package mod-xslt
+Summary:        nginx xslt module package
+Requires:       libxml2 libxslt
+BuildRequires:  libxml2-devel libxslt-devel
+%description mod-xslt
+%{summary}.
+%files mod-xslt
+%{nginx_moddir}/ngx_http_xslt_filter_module.so
+
+
+%package mod-perl
+Summary:        nginx perl module package
+BuildRequires:  perl(ExtUtils::Embed)
+%description mod-perl
+%{summary}.
+%files mod-perl
+%{nginx_moddir}/ngx_http_perl_module.so
+%dir %{perl_vendorarch}/auto/nginx
+%{perl_vendorarch}/nginx.pm
+%{perl_vendorarch}/auto/nginx/nginx.so
+
+
+%package mod-image-filter
+Summary:        nginx image filter module package
+Requires:       gd
+BuildRequires:  gd-devel
+%description mod-image-filter
+%{summary}.
+%files mod-image-filter
+%{nginx_moddir}/ngx_http_image_filter_module.so
+
+
+%package mod-stream
+Summary:        nginx GeoIP module package
+%description mod-stream
+%{summary}.
+%files mod-stream
+%{nginx_moddir}/ngx_stream_module.so
+
+
+%package mod-mail	
+Summary:        nginx mail module package
+%description mod-mail
+%{summary}.
+%files mod-mail
+%{nginx_moddir}/ngx_mail_module.so
+
+
+%package mod-geoip
+Summary:        nginx GeoIP module package
+Requires:       GeoIP
+BuildRequires:  GeoIP-devel
+%description mod-geoip
+%{summary}.
+%files mod-geoip
+%{nginx_moddir}/ngx_http_geoip_module.so
+%{nginx_moddir}/ngx_stream_geoip_module.so
 
 
 %prep
@@ -171,17 +227,6 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 %{nginx_webroot}/50x.html
 %{nginx_webroot}/index.html
 
-%{nginx_moddir}/ngx_http_geoip_module.so
-%{nginx_moddir}/ngx_http_image_filter_module.so
-%{nginx_moddir}/ngx_http_perl_module.so
-%{nginx_moddir}/ngx_http_xslt_filter_module.so
-%{nginx_moddir}/ngx_mail_module.so
-%{nginx_moddir}/ngx_stream_geoip_module.so
-%{nginx_moddir}/ngx_stream_module.so
-
-%dir %{perl_vendorarch}/auto/nginx
-%{perl_vendorarch}/nginx.pm
-%{perl_vendorarch}/auto/nginx/nginx.so
 
 
 %changelog
