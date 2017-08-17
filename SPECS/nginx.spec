@@ -49,40 +49,60 @@ nginx [engine x] is an HTTP and reverse proxy server, a mail proxy server,
 and a generic TCP/UDP proxy server, originally written by Igor Sysoev.
 
 
-%package mod-xslt
-Summary:        nginx xslt module package
+%package mod-http-xslt
+Summary:        nginx http xslt module
 Requires:       libxml2 libxslt
 BuildRequires:  libxml2-devel libxslt-devel
-%description mod-xslt
+%description mod-http-xslt
 %{summary}.
-%files mod-xslt
+%files mod-http-xslt
 %{nginx_moddir}/ngx_http_xslt_filter_module.so
 
 
-%package mod-perl
-Summary:        nginx perl module package
+%package mod-http-perl
+Summary:        nginx http perl module
 BuildRequires:  perl(ExtUtils::Embed)
-%description mod-perl
+%description mod-http-perl
 %{summary}.
-%files mod-perl
+%files mod-http-perl
 %{nginx_moddir}/ngx_http_perl_module.so
 %dir %{perl_vendorarch}/auto/nginx
 %{perl_vendorarch}/nginx.pm
 %{perl_vendorarch}/auto/nginx/nginx.so
 
 
-%package mod-image-filter
-Summary:        nginx image filter module package
+%package mod-http-image-filter
+Summary:        nginx http image filter module
 Requires:       gd
 BuildRequires:  gd-devel
-%description mod-image-filter
+%description mod-http-image-filter
 %{summary}.
-%files mod-image-filter
+%files mod-http-image-filter
 %{nginx_moddir}/ngx_http_image_filter_module.so
 
 
+%package mod-http-geoip
+Summary:        nginx http GeoIP module
+Requires:       GeoIP
+BuildRequires:  GeoIP-devel
+%description mod-http-geoip
+%{summary}.
+%files mod-http-geoip
+%{nginx_moddir}/ngx_http_geoip_module.so
+
+
+%package mod-stream-geoip
+Summary:        nginx stream GeoIP module
+Requires:       GeoIP
+BuildRequires:  GeoIP-devel
+%description mod-stream-geoip
+%{summary}.
+%files mod-stream-geoip
+%{nginx_moddir}/ngx_stream_geoip_module.so
+
+
 %package mod-stream
-Summary:        nginx GeoIP module package
+Summary:        nginx stream module
 %description mod-stream
 %{summary}.
 %files mod-stream
@@ -90,22 +110,11 @@ Summary:        nginx GeoIP module package
 
 
 %package mod-mail	
-Summary:        nginx mail module package
+Summary:        nginx mail module
 %description mod-mail
 %{summary}.
 %files mod-mail
 %{nginx_moddir}/ngx_mail_module.so
-
-
-%package mod-geoip
-Summary:        nginx GeoIP module package
-Requires:       GeoIP
-BuildRequires:  GeoIP-devel
-%description mod-geoip
-%{summary}.
-%files mod-geoip
-%{nginx_moddir}/ngx_http_geoip_module.so
-%{nginx_moddir}/ngx_stream_geoip_module.so
 
 
 %prep
