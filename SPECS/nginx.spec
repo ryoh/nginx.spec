@@ -1,26 +1,26 @@
-%define         _hardened_build     1
+%global         _hardened_build     1
 
-%define         nginx_user          nginx
-%define         nginx_group         nginx
-%define         nginx_uid           996
-%define         nginx_gid           996
-%define         nginx_home          %{_datadir}/nginx
-%define         nginx_moddir        %{_libdir}/nginx/modules
-%define         nginx_confdir       %{_sysconfdir}/nginx
-%define         nginx_tempdir       %{_sharedstatedir}/nginx
-%define         nginx_logdir        %{_localstatedir}/log/nginx
-%define         nginx_rundir        %{_rundir}
-%define         nginx_lockdir       %{_localstatedir}/lock/subsys
-%define         nginx_webroot       %{nginx_home}/html
+%global         nginx_user          nginx
+%global         nginx_group         nginx
+%global         nginx_uid           996
+%global         nginx_gid           996
+%global         nginx_home          %{_datadir}/nginx
+%global         nginx_moddir        %{_libdir}/nginx/modules
+%global         nginx_confdir       %{_sysconfdir}/nginx
+%global         nginx_tempdir       %{_sharedstatedir}/nginx
+%global         nginx_logdir        %{_localstatedir}/log/nginx
+%global         nginx_rundir        %{_rundir}
+%global         nginx_lockdir       %{_localstatedir}/lock/subsys
+%global         nginx_webroot       %{nginx_home}/html
 
-%define         pkg_name            nginx-mainline
-%define         main_version        1.13.4
-%define         main_release        1%{?dist}
+%global         pkg_name            nginx-mainline
+%global         main_version        1.13.4
+%global         main_release        1%{?dist}
 
-%define         ssl_name            libressl
-%define         ssl_version         2.5.5
-%define         ssl_pkgname         %{ssl_name}-%{ssl_version}
-%define         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
+%global         ssl_name            libressl
+%global         ssl_version         2.5.5
+%global         ssl_pkgname         %{ssl_name}-%{ssl_version}
+%global         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 
 
 Name:           %{pkg_name}
