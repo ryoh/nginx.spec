@@ -51,19 +51,25 @@ and a generic TCP/UDP proxy server, originally written by Igor Sysoev.
 
 %package mod-http-xslt
 Summary:        nginx http xslt module
+Requires:       %{name} = %{version}-%{release}
 Requires:       libxml2 libxslt
 BuildRequires:  libxml2-devel libxslt-devel
+
 %description mod-http-xslt
 %{summary}.
+
 %files mod-http-xslt
 %{nginx_moddir}/ngx_http_xslt_filter_module.so
 
 
 %package mod-http-perl
 Summary:        nginx http perl module
+Requires:       %{name} = %{version}-%{release}
 BuildRequires:  perl(ExtUtils::Embed)
+
 %description mod-http-perl
 %{summary}.
+
 %files mod-http-perl
 %{nginx_moddir}/ngx_http_perl_module.so
 %dir %{perl_vendorarch}/auto/nginx
@@ -73,46 +79,62 @@ BuildRequires:  perl(ExtUtils::Embed)
 
 %package mod-http-image-filter
 Summary:        nginx http image filter module
+Requires:       %{name} = %{version}-%{release}
 Requires:       gd
 BuildRequires:  gd-devel
+
 %description mod-http-image-filter
 %{summary}.
+
 %files mod-http-image-filter
 %{nginx_moddir}/ngx_http_image_filter_module.so
 
 
 %package mod-http-geoip
 Summary:        nginx http GeoIP module
+Requires:       %{name} = %{version}-%{release}
 Requires:       GeoIP
 BuildRequires:  GeoIP-devel
+
 %description mod-http-geoip
 %{summary}.
+
 %files mod-http-geoip
 %{nginx_moddir}/ngx_http_geoip_module.so
 
 
 %package mod-stream-geoip
 Summary:        nginx stream GeoIP module
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-mod-stream = %{version}-%{release}
 Requires:       GeoIP
 BuildRequires:  GeoIP-devel
+
 %description mod-stream-geoip
 %{summary}.
+
 %files mod-stream-geoip
 %{nginx_moddir}/ngx_stream_geoip_module.so
 
 
 %package mod-stream
 Summary:        nginx stream module
+Requires:       %{name} = %{version}-%{release}
+
 %description mod-stream
 %{summary}.
+
 %files mod-stream
 %{nginx_moddir}/ngx_stream_module.so
 
 
 %package mod-mail	
 Summary:        nginx mail module
+Requires:       %{name} = %{version}-%{release}
+
 %description mod-mail
 %{summary}.
+
 %files mod-mail
 %{nginx_moddir}/ngx_mail_module.so
 
@@ -122,8 +144,8 @@ Summary:        nginx mail module
 
 
 %build
-CFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags)}"; export CFLAGS;
-LDFLAGS="${LDFLAGS:-%{__global_ldflags} -Wl,-E}"; export LDFLAGS;
+CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags)}"; export CFLAGS;
+LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E}"; export LDFLAGS;
 
 pushd %{ssl_pkgname}
 ./configure
