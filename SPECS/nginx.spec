@@ -261,6 +261,8 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 
 
 %changelog
+* Fri Aug 18 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-1
+- Create module packages.
 * Sun Aug 13 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-1
 - Bumpup 1.13.4-1
 * Sun Aug 13 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.3-1
