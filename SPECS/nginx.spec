@@ -4,14 +4,23 @@
 %global         nginx_group         nginx
 %global         nginx_uid           996
 %global         nginx_gid           996
-%global         nginx_home          %{_datadir}/nginx
 %global         nginx_moddir        %{_libdir}/nginx/modules
 %global         nginx_confdir       %{_sysconfdir}/nginx
-%global         nginx_tempdir       %{_sharedstatedir}/nginx
+%global         nginx_tempdir       %{_var}/cache/nginx
 %global         nginx_logdir        %{_localstatedir}/log/nginx
 %global         nginx_rundir        %{_rundir}
-%global         nginx_lockdir       %{_localstatedir}/lock/subsys
+%global         nginx_lockdir       %{_localstatedir}/lock/subsys/nginx
+%global         nginx_home          %{_datadir}/nginx
 %global         nginx_webroot       %{nginx_home}/html
+%global         nginx_client_tempdir   %{nginx_tempdir}/client_body_temp
+%global         nginx_proxy_tempdir    %{nginx_tempdir}/proxy_temp
+%global         nginx_fastcgi_tempdir  %{nginx_tempdir}/fastcgi_temp
+%global         nginx_uwscgi_tempdir   %{nginx_tempdir}/uwscgi_temp
+%global         nginx_scgi_tempdir     %{nginx_tempdir}/scgi_temp
+%global         nginx_proxy_cachedir   %{nginx_tempdir}/proxy_cache
+%global         nginx_fastcgi_cachedir %{nginx_tempdir}/fastcgi_cache
+%global         nginx_uwscgi_cachedir  %{nginx_tempdir}/uwscgi_cache
+%global         nginx_scgi_cachedir    %{nginx_tempdir}/scgi_cache
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.4
@@ -33,6 +42,8 @@ URL:            https://nginx.net
 
 Source0:        https://nginx.org/download/nginx-%{main_version}.tar.gz
 Source1:        https://nginx.org/download/nginx-%{main_version}.tar.gz.asc
+Source10:       nginx.service
+Source11:       nginx.sysconf
 Source100:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
 
@@ -58,9 +69,6 @@ BuildRequires:  libxml2-devel libxslt-devel
 %description mod-http-xslt
 %{summary}.
 
-%files mod-http-xslt
-%{nginx_moddir}/ngx_http_xslt_filter_module.so
-
 
 %package mod-http-perl
 Summary:        nginx http perl module
@@ -69,12 +77,6 @@ BuildRequires:  perl(ExtUtils::Embed)
 
 %description mod-http-perl
 %{summary}.
-
-%files mod-http-perl
-%{nginx_moddir}/ngx_http_perl_module.so
-%dir %{perl_vendorarch}/auto/nginx
-%{perl_vendorarch}/nginx.pm
-%{perl_vendorarch}/auto/nginx/nginx.so
 
 
 %package mod-http-image-filter
@@ -86,9 +88,6 @@ BuildRequires:  gd-devel
 %description mod-http-image-filter
 %{summary}.
 
-%files mod-http-image-filter
-%{nginx_moddir}/ngx_http_image_filter_module.so
-
 
 %package mod-http-geoip
 Summary:        nginx http GeoIP module
@@ -98,9 +97,6 @@ BuildRequires:  GeoIP-devel
 
 %description mod-http-geoip
 %{summary}.
-
-%files mod-http-geoip
-%{nginx_moddir}/ngx_http_geoip_module.so
 
 
 %package mod-stream-geoip
@@ -113,9 +109,6 @@ BuildRequires:  GeoIP-devel
 %description mod-stream-geoip
 %{summary}.
 
-%files mod-stream-geoip
-%{nginx_moddir}/ngx_stream_geoip_module.so
-
 
 %package mod-stream
 Summary:        nginx stream module
@@ -124,9 +117,6 @@ Requires:       %{name} = %{version}-%{release}
 %description mod-stream
 %{summary}.
 
-%files mod-stream
-%{nginx_moddir}/ngx_stream_module.so
-
 
 %package mod-mail	
 Summary:        nginx mail module
@@ -134,9 +124,6 @@ Requires:       %{name} = %{version}-%{release}
 
 %description mod-mail
 %{summary}.
-
-%files mod-mail
-%{nginx_moddir}/ngx_mail_module.so
 
 
 %prep
@@ -162,14 +149,14 @@ popd
   --modules-path=%{nginx_moddir} \
   --conf-path=%{nginx_confdir}/nginx.conf \
   --pid-path=%{nginx_rundir}/nginx.pid \
-  --lock-path=%{nginx_lockdir}/nginx \
+  --lock-path=%{nginx_lockdir} \
   --error-log-path=%{nginx_logdir}/error.log \
   --http-log-path=%{nginx_logdir}/access.log \
-  --http-client-body-temp-path=%{nginx_tempdir}/client_body \
-  --http-proxy-temp-path=%{nginx_tempdir}/proxy \
-  --http-fastcgi-temp-path=%{nginx_tempdir}/fastcgi \
-  --http-uwsgi-temp-path=%{nginx_tempdir}/uwsgi \
-  --http-scgi-temp-path=%{nginx_tempdir}/scgi \
+  --http-client-body-temp-path=%{nginx_client_tempdir} \
+  --http-proxy-temp-path=%{nginx_proxy_tempdir} \
+  --http-fastcgi-temp-path=%{nginx_fastcgi_tempdir} \
+  --http-uwsgi-temp-path=%{nginx_uwscgi_tempdir} \
+  --http-scgi-temp-path=%{nginx_scgi_tempdir} \
   --user=%{nginx_user} \
   --group=%{nginx_group} \
   --build=%{name}-%{version}-%{release} \
@@ -226,30 +213,100 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 %{__rm} -f %{buildroot}%{nginx_confdir}/fastcgi.conf
 %{__rm} -f %{buildroot}%{nginx_confdir}/*.default
 
-# Create nginx temporary directories
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_home}
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/client_body
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/proxy
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/fastcgi
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/uwsgi
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/scgi
+# Create temporary directories
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_rundir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_lockdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_client_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_proxy_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_fastcgi_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_uwscgi_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_scgi_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_proxy_cachedir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_fastcgi_cachedir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_uwscgi_cachedir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_scgi_cachedir}
+
+# Add systemd service unit file
+%{__install} -p -D -m 0644 %{SOURCE10} %{buildroot}%{_unitdir}/%{name}.service
+%{__sed} -i \
+  -e 's|${rundir}|%{_rundir}|g' \
+  -e 's|${sbindir}|%{_sbindir}|g' \
+  -e 's|${pkg_name}|%{name}|g' \
+  %{buildroot}%{_unitdir}/%{name}.service
+
+%{__install} -p -D -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
 %clean
 %{__rm} -rf "%{buildroot}"
 
+%pre
+case $1 in
+  1)
+  : install
+  getent group %{nginx_group} \
+    || groupadd -r -g %{nginx_gid} %{nginx_group} \
+    || groupadd -r %{nginx_group}
+
+  getent passwd %{nginx_user} \
+    || useradd -r -g %{nginx_group} -u %{nginx_uid} %{nginx_user} \
+    || useradd -r -g %{nginx_group} %{nginx_user}
+  ;;
+  2)
+  : update
+  ;;
+esac
+
+%post
+%systemd_post %{name}.service
+case $1 in
+  1)
+  : install
+  ;;
+  2)
+  : update
+  ;;
+esac
+
+%preun
+%systemd_pre %{name}.service
+case $1 in
+  0)
+  : uninstall
+  ;;
+  1)
+  : update
+  ;;
+esac
+
+%postun
+%systemd_postun %{name}.service
+case $1 in
+  0)
+  : uninstall
+  getent passwd %{nginx_user} \
+    && userdel %{nginx_user} ||:
+
+  getent group %{nginx_group} \
+    && groupdell %{nginx_group} ||:
+  ;;
+  1)
+  : update
+  ;;
+esac
 
 %files
+%defattr(-,root,root)
 %{_sbindir}/nginx
 
-%{nginx_confdir}/nginx.conf
-%{nginx_confdir}/mime.types
-%{nginx_confdir}/fastcgi_params
-%{nginx_confdir}/scgi_params
-%{nginx_confdir}/uwsgi_params
-%{nginx_confdir}/koi-utf
-%{nginx_confdir}/koi-win
-%{nginx_confdir}/win-utf
+%config(noreplace) %{nginx_confdir}/nginx.conf
+%config(noreplace) %{nginx_confdir}/mime.types
+%config(noreplace) %{nginx_confdir}/fastcgi_params
+%config(noreplace) %{nginx_confdir}/scgi_params
+%config(noreplace) %{nginx_confdir}/uwsgi_params
+%config(noreplace) %{nginx_confdir}/koi-utf
+%config(noreplace) %{nginx_confdir}/koi-win
+%config(noreplace) %{nginx_confdir}/win-utf
 
 %{_mandir}/man3/nginx.3pm.gz
 
@@ -258,6 +315,48 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 %{nginx_webroot}/50x.html
 %{nginx_webroot}/index.html
 
+%{_unitdir}/%{name}.service
+%{_sysconfdir}/sysconfig/%{name}
+
+%dir %{nginx_rundir}
+%dir %{nginx_lockdir}
+
+%defattr(-,%{nginx_user},%{nginx_group})
+%dir %{nginx_logdir}
+%dir %{nginx_tempdir}
+%dir %{nginx_client_tempdir}
+%dir %{nginx_proxy_tempdir}
+%dir %{nginx_fastcgi_tempdir}
+%dir %{nginx_uwscgi_tempdir}
+%dir %{nginx_scgi_tempdir}
+%dir %{nginx_proxy_cachedir}
+%dir %{nginx_fastcgi_cachedir}
+%dir %{nginx_uwscgi_cachedir}
+%dir %{nginx_scgi_cachedir}
+
+%files mod-http-xslt
+%{nginx_moddir}/ngx_http_xslt_filter_module.so
+
+%files mod-http-perl
+%{nginx_moddir}/ngx_http_perl_module.so
+%dir %{perl_vendorarch}/auto/nginx
+%{perl_vendorarch}/nginx.pm
+%{perl_vendorarch}/auto/nginx/nginx.so
+
+%files mod-http-image-filter
+%{nginx_moddir}/ngx_http_image_filter_module.so
+
+%files mod-http-geoip
+%{nginx_moddir}/ngx_http_geoip_module.so
+
+%files mod-stream-geoip
+%{nginx_moddir}/ngx_stream_geoip_module.so
+
+%files mod-stream
+%{nginx_moddir}/ngx_stream_module.so
+
+%files mod-mail
+%{nginx_moddir}/ngx_mail_module.so
 
 
 %changelog
