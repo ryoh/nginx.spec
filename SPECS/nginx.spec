@@ -24,12 +24,57 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.4
-%global         main_release        1%{?dist}
+%global         main_release        2%{?dist}
 
 %global         ssl_name            libressl
 %global         ssl_version         2.5.5
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
+
+%global         mod_ndk_name        ngx_devel_kit
+%global         mod_ndk_version     0.3.0
+%global         mod_ndk_pkgname     %{mod_ndk_name}-%{mod_ndk_version}
+%global         mod_ndk_url         https://github.com/simpl/%{mod_ndk_name}/archive/v%{mod_ndk_version}.tar.gz#/%{mod_ndk_pkgname}.tar.gz
+
+%global         mod_lua_name        lua-nginx-module
+%global         mod_lua_version     0.10.10
+%global         mod_lua_pkgname     %{mod_lua_name}-%{mod_lua_version}
+%global         mod_lua_url         https://github.com/openresty/%{mod_lua_name}/archive/v%{mod_lua_version}.tar.gz#/%{mod_lua_pkgname}.tar.gz
+
+%global         mod_lua_upstream_name    lua-upstream-nginx-module
+%global         mod_lua_upstream_version 0.07
+%global         mod_lua_upstream_pkgname %{mod_lua_upstream_name}-%{mod_lua_upstream_version}
+%global         mod_lua_upstream_url     https://github.com/openresty/%{mod_lua_upstream_name}/archive/v%{mod_lua_upstream_version}.tar.gz#/%{mod_lua_upstream_pkgname}.tar.gz
+
+%global         mod_headers_more_name    headers-more-nginx-module
+%global         mod_headers_more_version 0.33
+%global         mod_headers_more_pkgname %{mod_headers_more_name}-%{mod_headers_more_version}
+%global         mod_headers_more_url     https://github.com/openresty/%{mod_headers_more_name}/archive/v%{mod_headers_more_version}.tar.gz#/%{mod_headers_more_pkgname}.tar.gz
+
+%global         mod_echo_name            echo-nginx-module
+%global         mod_echo_version         0.61
+%global         mod_echo_pkgname         %{mod_echo_name}-%{mod_echo_version}
+%global         mod_echo_url             https://github.com/openresty/%{mod_echo_name}/archive/v%{mod_echo_version}.tar.gz#/%{mod_echo_pkgname}.tar.gz
+
+%global         mod_set_misc_name        set-misc-nginx-module
+%global         mod_set_misc_version     0.31
+%global         mod_set_misc_pkgname     %{mod_set_misc_name}-%{mod_set_misc_version}
+%global         mod_set_misc_url         https://github.com/openresty/%{mod_set_misc_name}/archive/v%{mod_set_misc_version}.tar.gz#/%{mod_set_misc_pkgname}.tar.gz
+
+%global         mod_memc_name            memc-nginx-module
+%global         mod_memc_version         0.18
+%global         mod_memc_pkgname         %{mod_memc_name}-%{mod_memc_version}
+%global         mod_memc_url             https://github.com/openresty/%{mod_memc_name}/archive/v%{mod_memc_version}.tar.gz#/%{mod_memc_pkgname}.tar.gz
+
+%global         mod_srcache_name         srcache-nginx-module
+%global         mod_srcache_version      0.31
+%global         mod_srcache_pkgname      %{mod_srcache_name}-%{mod_srcache_version}
+%global         mod_srcache_url          https://github.com/openresty/%{mod_srcache_name}/archive/v%{mod_srcache_version}.tar.gz#/%{mod_srcache_pkgname}.tar.gz
+
+%global         mod_redis2_name          redis2-nginx-module
+%global         mod_redis2_version       0.14
+%global         mod_redis2_pkgname       %{mod_redis2_name}-%{mod_redis2_version}
+%global         mod_redis2_url           https://github.com/openresty/%{mod_redis2_name}/archive/v%{mod_redis2_version}.tar.gz#/%{mod_redis2_pkgname}.tar.gz
 
 
 Name:           %{pkg_name}
@@ -46,6 +91,16 @@ Source10:       nginx.service
 Source11:       nginx.sysconf
 Source100:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
+
+Source200:      %{mod_ndk_url}
+Source201:      %{mod_lua_url}
+Source202:      %{mod_lua_upstream_url}
+Source203:      %{mod_headers_more_url}
+Source204:      %{mod_echo_url}
+Source205:      %{mod_set_misc_url}
+Source206:      %{mod_memc_url}
+Source207:      %{mod_srcache_url}
+Source208:      %{mod_redis2_url}
 
 Requires(pre):  shadow-utils
 %systemd_requires
@@ -126,12 +181,89 @@ Requires:       %{name} = %{version}-%{release}
 %{summary}.
 
 
+%package mod-http-lua
+Summary:        nginx Lua module (for http module)
+Release:        %{mod_lua_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       luajit
+BuildRequires:  luajit-devel
+
+%description mod-http-lua
+%{summary}.
+
+%package mod-http-lua-upstream
+Summary:        nginx Lua upstream module (for http module)
+Release:        %{mod_lua_upstream_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-mod-lua = %{version}-%{release}
+
+%description mod-http-lua-upstream
+%{summary}.
+
+%package mod-headers-more
+Summary:        nginx headers more module
+Release:        %{mod_headers_more_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-headers-more
+%{summary}.
+
+%package mod-echo
+Summary:        nginx echo module
+Release:        %{mod_echo_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-echo
+%{summary}.
+
+%package mod-set-misc
+Summary:        nginx set misc module
+Release:        %{mod_set_misc_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-set-misc
+%{summary}.
+
+%package mod-memc
+Summary:        nginx memc module
+Release:        %{mod_memc_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-memc
+%{summary}.
+
+%package mod-srcache
+Summary:        nginx srcache module
+Release:        %{mod_srcache_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-srcache
+%{summary}.
+
+%package mod-redis2
+Summary:        nginx redis2 module
+Release:        %{mod_redis2_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-redis2
+%{summary}.
+
+
 %prep
 %setup -q -n nginx-%{version} -a 100
+%__tar xf %{SOURCE200}
+%__tar xf %{SOURCE201}
+%__tar xf %{SOURCE202}
+%__tar xf %{SOURCE203}
+%__tar xf %{SOURCE204}
+%__tar xf %{SOURCE205}
+%__tar xf %{SOURCE206}
+%__tar xf %{SOURCE207}
+%__tar xf %{SOURCE208}
 
 
 %build
-CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags)}"; export CFLAGS;
+CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags) -DNGX_LUA_ABORT_AT_PANIC}"; export CFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E}"; export LDFLAGS;
 
 pushd %{ssl_pkgname}
@@ -139,6 +271,9 @@ pushd %{ssl_pkgname}
 
 %make_build
 popd
+
+export LUAJIT_LIB=/usr/lib64
+export LUAJIT_INC=/usr/include/luajit-2.0
 
 ./configure \
   --with-cc-opt="${CFLAGS}" \
@@ -194,6 +329,15 @@ popd
   --with-stream_realip_module \
   --with-stream_geoip_module=dynamic \
   --with-stream_ssl_preread_module \
+  --add-dynamic-module=%{mod_ndk_pkgname} \
+  --add-dynamic-module=%{mod_lua_pkgname} \
+  --add-dynamic-module=%{mod_lua_upstream_pkgname} \
+  --add-dynamic-module=%{mod_headers_more_pkgname} \
+  --add-dynamic-module=%{mod_echo_pkgname} \
+  --add-dynamic-module=%{mod_set_misc_pkgname} \
+  --add-dynamic-module=%{mod_memc_pkgname} \
+  --add-dynamic-module=%{mod_srcache_pkgname} \
+  --add-dynamic-module=%{mod_redis2_pkgname} \
 
 %make_build
 
@@ -358,8 +502,41 @@ esac
 %files mod-mail
 %{nginx_moddir}/ngx_mail_module.so
 
+%files mod-http-lua
+%{nginx_moddir}/ndk_http_module.so
+%{nginx_moddir}/ngx_http_lua_module.so
+
+%files mod-http-lua-upstream
+%{nginx_moddir}/ngx_http_lua_upstream_module.so
+
+%files mod-headers-more
+%{nginx_moddir}/ngx_http_headers_more_filter_module.so
+
+%files mod-echo
+%{nginx_moddir}/ngx_http_echo_module.so
+
+%files mod-set-misc
+%{nginx_moddir}/ngx_http_set_misc_module.so
+
+%files mod-memc
+%{nginx_moddir}/ngx_http_memc_module.so
+
+%files mod-srcache
+%{nginx_moddir}/ngx_http_srcache_filter_module.so
+
+%files mod-redis2
+%{nginx_moddir}/ngx_http_redis2_module.so
 
 %changelog
+* Fri Nov 03 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-2
+- Add http Lua module.
+- Add http Lua upstream module.
+- Add headers more module.
+- Add echo module.
+- Add set misc module.
+- Add memc module.
+- Add srcache module.
+- Add redis2 module.
 * Fri Aug 18 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-1
 - Create module packages.
 * Sun Aug 13 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-1
