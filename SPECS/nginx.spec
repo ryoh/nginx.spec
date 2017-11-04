@@ -4,23 +4,77 @@
 %global         nginx_group         nginx
 %global         nginx_uid           996
 %global         nginx_gid           996
-%global         nginx_home          %{_datadir}/nginx
 %global         nginx_moddir        %{_libdir}/nginx/modules
 %global         nginx_confdir       %{_sysconfdir}/nginx
-%global         nginx_tempdir       %{_sharedstatedir}/nginx
+%global         nginx_tempdir       %{_var}/cache/nginx
 %global         nginx_logdir        %{_localstatedir}/log/nginx
 %global         nginx_rundir        %{_rundir}
-%global         nginx_lockdir       %{_localstatedir}/lock/subsys
+%global         nginx_lockdir       %{_localstatedir}/lock/subsys/nginx
+%global         nginx_home          %{_datadir}/nginx
 %global         nginx_webroot       %{nginx_home}/html
+%global         nginx_client_tempdir   %{nginx_tempdir}/client_body_temp
+%global         nginx_proxy_tempdir    %{nginx_tempdir}/proxy_temp
+%global         nginx_fastcgi_tempdir  %{nginx_tempdir}/fastcgi_temp
+%global         nginx_uwscgi_tempdir   %{nginx_tempdir}/uwscgi_temp
+%global         nginx_scgi_tempdir     %{nginx_tempdir}/scgi_temp
+%global         nginx_proxy_cachedir   %{nginx_tempdir}/proxy_cache
+%global         nginx_fastcgi_cachedir %{nginx_tempdir}/fastcgi_cache
+%global         nginx_uwscgi_cachedir  %{nginx_tempdir}/uwscgi_cache
+%global         nginx_scgi_cachedir    %{nginx_tempdir}/scgi_cache
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.4
-%global         main_release        1%{?dist}
+%global         main_release        2%{?dist}
 
 %global         ssl_name            libressl
 %global         ssl_version         2.5.5
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
+
+%global         mod_ndk_name        ngx_devel_kit
+%global         mod_ndk_version     0.3.0
+%global         mod_ndk_pkgname     %{mod_ndk_name}-%{mod_ndk_version}
+%global         mod_ndk_url         https://github.com/simpl/%{mod_ndk_name}/archive/v%{mod_ndk_version}.tar.gz#/%{mod_ndk_pkgname}.tar.gz
+
+%global         mod_lua_name        lua-nginx-module
+%global         mod_lua_version     0.10.10
+%global         mod_lua_pkgname     %{mod_lua_name}-%{mod_lua_version}
+%global         mod_lua_url         https://github.com/openresty/%{mod_lua_name}/archive/v%{mod_lua_version}.tar.gz#/%{mod_lua_pkgname}.tar.gz
+
+%global         mod_lua_upstream_name    lua-upstream-nginx-module
+%global         mod_lua_upstream_version 0.07
+%global         mod_lua_upstream_pkgname %{mod_lua_upstream_name}-%{mod_lua_upstream_version}
+%global         mod_lua_upstream_url     https://github.com/openresty/%{mod_lua_upstream_name}/archive/v%{mod_lua_upstream_version}.tar.gz#/%{mod_lua_upstream_pkgname}.tar.gz
+
+%global         mod_headers_more_name    headers-more-nginx-module
+%global         mod_headers_more_version 0.33
+%global         mod_headers_more_pkgname %{mod_headers_more_name}-%{mod_headers_more_version}
+%global         mod_headers_more_url     https://github.com/openresty/%{mod_headers_more_name}/archive/v%{mod_headers_more_version}.tar.gz#/%{mod_headers_more_pkgname}.tar.gz
+
+%global         mod_echo_name            echo-nginx-module
+%global         mod_echo_version         0.61
+%global         mod_echo_pkgname         %{mod_echo_name}-%{mod_echo_version}
+%global         mod_echo_url             https://github.com/openresty/%{mod_echo_name}/archive/v%{mod_echo_version}.tar.gz#/%{mod_echo_pkgname}.tar.gz
+
+%global         mod_set_misc_name        set-misc-nginx-module
+%global         mod_set_misc_version     0.31
+%global         mod_set_misc_pkgname     %{mod_set_misc_name}-%{mod_set_misc_version}
+%global         mod_set_misc_url         https://github.com/openresty/%{mod_set_misc_name}/archive/v%{mod_set_misc_version}.tar.gz#/%{mod_set_misc_pkgname}.tar.gz
+
+%global         mod_memc_name            memc-nginx-module
+%global         mod_memc_version         0.18
+%global         mod_memc_pkgname         %{mod_memc_name}-%{mod_memc_version}
+%global         mod_memc_url             https://github.com/openresty/%{mod_memc_name}/archive/v%{mod_memc_version}.tar.gz#/%{mod_memc_pkgname}.tar.gz
+
+%global         mod_srcache_name         srcache-nginx-module
+%global         mod_srcache_version      0.31
+%global         mod_srcache_pkgname      %{mod_srcache_name}-%{mod_srcache_version}
+%global         mod_srcache_url          https://github.com/openresty/%{mod_srcache_name}/archive/v%{mod_srcache_version}.tar.gz#/%{mod_srcache_pkgname}.tar.gz
+
+%global         mod_redis2_name          redis2-nginx-module
+%global         mod_redis2_version       0.14
+%global         mod_redis2_pkgname       %{mod_redis2_name}-%{mod_redis2_version}
+%global         mod_redis2_url           https://github.com/openresty/%{mod_redis2_name}/archive/v%{mod_redis2_version}.tar.gz#/%{mod_redis2_pkgname}.tar.gz
 
 
 Name:           %{pkg_name}
@@ -33,8 +87,20 @@ URL:            https://nginx.net
 
 Source0:        https://nginx.org/download/nginx-%{main_version}.tar.gz
 Source1:        https://nginx.org/download/nginx-%{main_version}.tar.gz.asc
+Source10:       nginx.service
+Source11:       nginx.sysconf
 Source100:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
+
+Source200:      %{mod_ndk_url}
+Source201:      %{mod_lua_url}
+Source202:      %{mod_lua_upstream_url}
+Source203:      %{mod_headers_more_url}
+Source204:      %{mod_echo_url}
+Source205:      %{mod_set_misc_url}
+Source206:      %{mod_memc_url}
+Source207:      %{mod_srcache_url}
+Source208:      %{mod_redis2_url}
 
 Requires(pre):  shadow-utils
 %systemd_requires
@@ -58,9 +124,6 @@ BuildRequires:  libxml2-devel libxslt-devel
 %description mod-http-xslt
 %{summary}.
 
-%files mod-http-xslt
-%{nginx_moddir}/ngx_http_xslt_filter_module.so
-
 
 %package mod-http-perl
 Summary:        nginx http perl module
@@ -69,12 +132,6 @@ BuildRequires:  perl(ExtUtils::Embed)
 
 %description mod-http-perl
 %{summary}.
-
-%files mod-http-perl
-%{nginx_moddir}/ngx_http_perl_module.so
-%dir %{perl_vendorarch}/auto/nginx
-%{perl_vendorarch}/nginx.pm
-%{perl_vendorarch}/auto/nginx/nginx.so
 
 
 %package mod-http-image-filter
@@ -86,9 +143,6 @@ BuildRequires:  gd-devel
 %description mod-http-image-filter
 %{summary}.
 
-%files mod-http-image-filter
-%{nginx_moddir}/ngx_http_image_filter_module.so
-
 
 %package mod-http-geoip
 Summary:        nginx http GeoIP module
@@ -98,9 +152,6 @@ BuildRequires:  GeoIP-devel
 
 %description mod-http-geoip
 %{summary}.
-
-%files mod-http-geoip
-%{nginx_moddir}/ngx_http_geoip_module.so
 
 
 %package mod-stream-geoip
@@ -113,9 +164,6 @@ BuildRequires:  GeoIP-devel
 %description mod-stream-geoip
 %{summary}.
 
-%files mod-stream-geoip
-%{nginx_moddir}/ngx_stream_geoip_module.so
-
 
 %package mod-stream
 Summary:        nginx stream module
@@ -123,9 +171,6 @@ Requires:       %{name} = %{version}-%{release}
 
 %description mod-stream
 %{summary}.
-
-%files mod-stream
-%{nginx_moddir}/ngx_stream_module.so
 
 
 %package mod-mail	
@@ -135,16 +180,90 @@ Requires:       %{name} = %{version}-%{release}
 %description mod-mail
 %{summary}.
 
-%files mod-mail
-%{nginx_moddir}/ngx_mail_module.so
+
+%package mod-http-lua
+Summary:        nginx Lua module (for http module)
+Release:        %{mod_lua_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       luajit
+BuildRequires:  luajit-devel
+
+%description mod-http-lua
+%{summary}.
+
+%package mod-http-lua-upstream
+Summary:        nginx Lua upstream module (for http module)
+Release:        %{mod_lua_upstream_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-mod-lua = %{version}-%{release}
+
+%description mod-http-lua-upstream
+%{summary}.
+
+%package mod-headers-more
+Summary:        nginx headers more module
+Release:        %{mod_headers_more_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-headers-more
+%{summary}.
+
+%package mod-echo
+Summary:        nginx echo module
+Release:        %{mod_echo_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-echo
+%{summary}.
+
+%package mod-set-misc
+Summary:        nginx set misc module
+Release:        %{mod_set_misc_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-set-misc
+%{summary}.
+
+%package mod-memc
+Summary:        nginx memc module
+Release:        %{mod_memc_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-memc
+%{summary}.
+
+%package mod-srcache
+Summary:        nginx srcache module
+Release:        %{mod_srcache_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-srcache
+%{summary}.
+
+%package mod-redis2
+Summary:        nginx redis2 module
+Release:        %{mod_redis2_version}.%{main_release}
+Requires:       %{name} = %{version}-%{release}
+
+%description mod-redis2
+%{summary}.
 
 
 %prep
 %setup -q -n nginx-%{version} -a 100
+%__tar xf %{SOURCE200}
+%__tar xf %{SOURCE201}
+%__tar xf %{SOURCE202}
+%__tar xf %{SOURCE203}
+%__tar xf %{SOURCE204}
+%__tar xf %{SOURCE205}
+%__tar xf %{SOURCE206}
+%__tar xf %{SOURCE207}
+%__tar xf %{SOURCE208}
 
 
 %build
-CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags)}"; export CFLAGS;
+CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags) -DNGX_LUA_ABORT_AT_PANIC}"; export CFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E}"; export LDFLAGS;
 
 pushd %{ssl_pkgname}
@@ -152,6 +271,9 @@ pushd %{ssl_pkgname}
 
 %make_build
 popd
+
+export LUAJIT_LIB=/usr/lib64
+export LUAJIT_INC=/usr/include/luajit-2.0
 
 ./configure \
   --with-cc-opt="${CFLAGS}" \
@@ -162,14 +284,14 @@ popd
   --modules-path=%{nginx_moddir} \
   --conf-path=%{nginx_confdir}/nginx.conf \
   --pid-path=%{nginx_rundir}/nginx.pid \
-  --lock-path=%{nginx_lockdir}/nginx \
+  --lock-path=%{nginx_lockdir} \
   --error-log-path=%{nginx_logdir}/error.log \
   --http-log-path=%{nginx_logdir}/access.log \
-  --http-client-body-temp-path=%{nginx_tempdir}/client_body \
-  --http-proxy-temp-path=%{nginx_tempdir}/proxy \
-  --http-fastcgi-temp-path=%{nginx_tempdir}/fastcgi \
-  --http-uwsgi-temp-path=%{nginx_tempdir}/uwsgi \
-  --http-scgi-temp-path=%{nginx_tempdir}/scgi \
+  --http-client-body-temp-path=%{nginx_client_tempdir} \
+  --http-proxy-temp-path=%{nginx_proxy_tempdir} \
+  --http-fastcgi-temp-path=%{nginx_fastcgi_tempdir} \
+  --http-uwsgi-temp-path=%{nginx_uwscgi_tempdir} \
+  --http-scgi-temp-path=%{nginx_scgi_tempdir} \
   --user=%{nginx_user} \
   --group=%{nginx_group} \
   --build=%{name}-%{version}-%{release} \
@@ -207,6 +329,15 @@ popd
   --with-stream_realip_module \
   --with-stream_geoip_module=dynamic \
   --with-stream_ssl_preread_module \
+  --add-dynamic-module=%{mod_ndk_pkgname} \
+  --add-dynamic-module=%{mod_lua_pkgname} \
+  --add-dynamic-module=%{mod_lua_upstream_pkgname} \
+  --add-dynamic-module=%{mod_headers_more_pkgname} \
+  --add-dynamic-module=%{mod_echo_pkgname} \
+  --add-dynamic-module=%{mod_set_misc_pkgname} \
+  --add-dynamic-module=%{mod_memc_pkgname} \
+  --add-dynamic-module=%{mod_srcache_pkgname} \
+  --add-dynamic-module=%{mod_redis2_pkgname} \
 
 %make_build
 
@@ -226,30 +357,100 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 %{__rm} -f %{buildroot}%{nginx_confdir}/fastcgi.conf
 %{__rm} -f %{buildroot}%{nginx_confdir}/*.default
 
-# Create nginx temporary directories
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_home}
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/client_body
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/proxy
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/fastcgi
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/uwsgi
-%{__install} -p -d -m 0700 %{buildroot}%{nginx_tempdir}/scgi
+# Create temporary directories
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_rundir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_lockdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_client_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_proxy_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_fastcgi_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_uwscgi_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_scgi_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_proxy_cachedir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_fastcgi_cachedir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_uwscgi_cachedir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_scgi_cachedir}
+
+# Add systemd service unit file
+%{__install} -p -D -m 0644 %{SOURCE10} %{buildroot}%{_unitdir}/%{name}.service
+%{__sed} -i \
+  -e 's|${rundir}|%{_rundir}|g' \
+  -e 's|${sbindir}|%{_sbindir}|g' \
+  -e 's|${pkg_name}|%{name}|g' \
+  %{buildroot}%{_unitdir}/%{name}.service
+
+%{__install} -p -D -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
 %clean
 %{__rm} -rf "%{buildroot}"
 
+%pre
+case $1 in
+  1)
+  : install
+  getent group %{nginx_group} \
+    || groupadd -r -g %{nginx_gid} %{nginx_group} \
+    || groupadd -r %{nginx_group}
+
+  getent passwd %{nginx_user} \
+    || useradd -r -g %{nginx_group} -u %{nginx_uid} %{nginx_user} \
+    || useradd -r -g %{nginx_group} %{nginx_user}
+  ;;
+  2)
+  : update
+  ;;
+esac
+
+%post
+%systemd_post %{name}.service
+case $1 in
+  1)
+  : install
+  ;;
+  2)
+  : update
+  ;;
+esac
+
+%preun
+%systemd_pre %{name}.service
+case $1 in
+  0)
+  : uninstall
+  ;;
+  1)
+  : update
+  ;;
+esac
+
+%postun
+%systemd_postun %{name}.service
+case $1 in
+  0)
+  : uninstall
+  getent passwd %{nginx_user} \
+    && userdel %{nginx_user} ||:
+
+  getent group %{nginx_group} \
+    && groupdell %{nginx_group} ||:
+  ;;
+  1)
+  : update
+  ;;
+esac
 
 %files
+%defattr(-,root,root)
 %{_sbindir}/nginx
 
-%{nginx_confdir}/nginx.conf
-%{nginx_confdir}/mime.types
-%{nginx_confdir}/fastcgi_params
-%{nginx_confdir}/scgi_params
-%{nginx_confdir}/uwsgi_params
-%{nginx_confdir}/koi-utf
-%{nginx_confdir}/koi-win
-%{nginx_confdir}/win-utf
+%config(noreplace) %{nginx_confdir}/nginx.conf
+%config(noreplace) %{nginx_confdir}/mime.types
+%config(noreplace) %{nginx_confdir}/fastcgi_params
+%config(noreplace) %{nginx_confdir}/scgi_params
+%config(noreplace) %{nginx_confdir}/uwsgi_params
+%config(noreplace) %{nginx_confdir}/koi-utf
+%config(noreplace) %{nginx_confdir}/koi-win
+%config(noreplace) %{nginx_confdir}/win-utf
 
 %{_mandir}/man3/nginx.3pm.gz
 
@@ -258,9 +459,84 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 %{nginx_webroot}/50x.html
 %{nginx_webroot}/index.html
 
+%{_unitdir}/%{name}.service
+%{_sysconfdir}/sysconfig/%{name}
 
+%dir %{nginx_rundir}
+%dir %{nginx_lockdir}
+
+%defattr(-,%{nginx_user},%{nginx_group})
+%dir %{nginx_logdir}
+%dir %{nginx_tempdir}
+%dir %{nginx_client_tempdir}
+%dir %{nginx_proxy_tempdir}
+%dir %{nginx_fastcgi_tempdir}
+%dir %{nginx_uwscgi_tempdir}
+%dir %{nginx_scgi_tempdir}
+%dir %{nginx_proxy_cachedir}
+%dir %{nginx_fastcgi_cachedir}
+%dir %{nginx_uwscgi_cachedir}
+%dir %{nginx_scgi_cachedir}
+
+%files mod-http-xslt
+%{nginx_moddir}/ngx_http_xslt_filter_module.so
+
+%files mod-http-perl
+%{nginx_moddir}/ngx_http_perl_module.so
+%dir %{perl_vendorarch}/auto/nginx
+%{perl_vendorarch}/nginx.pm
+%{perl_vendorarch}/auto/nginx/nginx.so
+
+%files mod-http-image-filter
+%{nginx_moddir}/ngx_http_image_filter_module.so
+
+%files mod-http-geoip
+%{nginx_moddir}/ngx_http_geoip_module.so
+
+%files mod-stream-geoip
+%{nginx_moddir}/ngx_stream_geoip_module.so
+
+%files mod-stream
+%{nginx_moddir}/ngx_stream_module.so
+
+%files mod-mail
+%{nginx_moddir}/ngx_mail_module.so
+
+%files mod-http-lua
+%{nginx_moddir}/ndk_http_module.so
+%{nginx_moddir}/ngx_http_lua_module.so
+
+%files mod-http-lua-upstream
+%{nginx_moddir}/ngx_http_lua_upstream_module.so
+
+%files mod-headers-more
+%{nginx_moddir}/ngx_http_headers_more_filter_module.so
+
+%files mod-echo
+%{nginx_moddir}/ngx_http_echo_module.so
+
+%files mod-set-misc
+%{nginx_moddir}/ngx_http_set_misc_module.so
+
+%files mod-memc
+%{nginx_moddir}/ngx_http_memc_module.so
+
+%files mod-srcache
+%{nginx_moddir}/ngx_http_srcache_filter_module.so
+
+%files mod-redis2
+%{nginx_moddir}/ngx_http_redis2_module.so
 
 %changelog
+* Fri Nov 03 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-2
+- Add http Lua module.
+- Add http Lua upstream module.
+- Add headers more module.
+- Add echo module.
+- Add set misc module.
+- Add memc module.
+- Add srcache module.
+- Add redis2 module.
 * Fri Aug 18 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-1
 - Create module packages.
 * Sun Aug 13 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-1
