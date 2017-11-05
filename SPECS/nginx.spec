@@ -184,7 +184,7 @@ Requires:       %{name} = %{version}-%{release}
 %package mod-http-lua
 Summary:        nginx Lua module (for http module)
 Release:        %{mod_lua_version}.%{main_release}
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 Requires:       luajit
 BuildRequires:  luajit-devel
 
@@ -194,8 +194,8 @@ BuildRequires:  luajit-devel
 %package mod-http-lua-upstream
 Summary:        nginx Lua upstream module (for http module)
 Release:        %{mod_lua_upstream_version}.%{main_release}
-Requires:       %{name} = %{version}-%{release}
-Requires:       %{name}-mod-lua = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
+Requires:       %{name}-mod-http-lua
 
 %description mod-http-lua-upstream
 %{summary}.
@@ -203,7 +203,7 @@ Requires:       %{name}-mod-lua = %{version}-%{release}
 %package mod-headers-more
 Summary:        nginx headers more module
 Release:        %{mod_headers_more_version}.%{main_release}
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-headers-more
 %{summary}.
@@ -211,7 +211,7 @@ Requires:       %{name} = %{version}-%{release}
 %package mod-echo
 Summary:        nginx echo module
 Release:        %{mod_echo_version}.%{main_release}
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-echo
 %{summary}.
@@ -219,7 +219,7 @@ Requires:       %{name} = %{version}-%{release}
 %package mod-set-misc
 Summary:        nginx set misc module
 Release:        %{mod_set_misc_version}.%{main_release}
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-set-misc
 %{summary}.
@@ -227,7 +227,7 @@ Requires:       %{name} = %{version}-%{release}
 %package mod-memc
 Summary:        nginx memc module
 Release:        %{mod_memc_version}.%{main_release}
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-memc
 %{summary}.
@@ -235,7 +235,7 @@ Requires:       %{name} = %{version}-%{release}
 %package mod-srcache
 Summary:        nginx srcache module
 Release:        %{mod_srcache_version}.%{main_release}
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-srcache
 %{summary}.
@@ -243,7 +243,7 @@ Requires:       %{name} = %{version}-%{release}
 %package mod-redis2
 Summary:        nginx redis2 module
 Release:        %{mod_redis2_version}.%{main_release}
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-redis2
 %{summary}.
