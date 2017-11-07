@@ -117,7 +117,7 @@ and a generic TCP/UDP proxy server, originally written by Igor Sysoev.
 
 %package mod-http-xslt
 Summary:        nginx http xslt module
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 Requires:       libxml2 libxslt
 BuildRequires:  libxml2-devel libxslt-devel
 
@@ -127,7 +127,7 @@ BuildRequires:  libxml2-devel libxslt-devel
 
 %package mod-http-perl
 Summary:        nginx http perl module
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 BuildRequires:  perl(ExtUtils::Embed)
 
 %description mod-http-perl
@@ -136,7 +136,7 @@ BuildRequires:  perl(ExtUtils::Embed)
 
 %package mod-http-image-filter
 Summary:        nginx http image filter module
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 Requires:       gd
 BuildRequires:  gd-devel
 
@@ -146,7 +146,7 @@ BuildRequires:  gd-devel
 
 %package mod-http-geoip
 Summary:        nginx http GeoIP module
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 Requires:       GeoIP
 BuildRequires:  GeoIP-devel
 
@@ -156,8 +156,8 @@ BuildRequires:  GeoIP-devel
 
 %package mod-stream-geoip
 Summary:        nginx stream GeoIP module
-Requires:       %{name} = %{version}-%{release}
-Requires:       %{name}-mod-stream = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
+Requires:       %{name}-mod-stream = %{version}-%{main_release}
 Requires:       GeoIP
 BuildRequires:  GeoIP-devel
 
@@ -167,7 +167,7 @@ BuildRequires:  GeoIP-devel
 
 %package mod-stream
 Summary:        nginx stream module
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-stream
 %{summary}.
@@ -175,7 +175,7 @@ Requires:       %{name} = %{version}-%{release}
 
 %package mod-mail	
 Summary:        nginx mail module
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-mail
 %{summary}.
@@ -381,6 +381,19 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 
 %{__install} -p -D -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
+# Add add_module configs
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_confdir}/conf.modules.d
+for mod_fullpath in $(find %{buildroot}%{nginx_moddir} -type f -name '*.so'); do
+  mod_path=$( echo ${mod_fullpath} | sed -re 's|%{buildroot}||' )
+  mod_name=$(basename ${mod_path} .so)
+  cat > %{buildroot}%{nginx_confdir}/conf.modules.d/${mod_name}.conf <<-___EOL___
+	# ${mod_name} loading file
+	load_module ${mod_path};
+	___EOL___
+done
+%{__mv} %{buildroot}%{nginx_confdir}/conf.modules.d/{,00-}ngx_stream_module.conf
+
+
 %clean
 %{__rm} -rf "%{buildroot}"
 
@@ -480,52 +493,68 @@ esac
 
 %files mod-http-xslt
 %{nginx_moddir}/ngx_http_xslt_filter_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_xslt_filter_module.conf
 
 %files mod-http-perl
 %{nginx_moddir}/ngx_http_perl_module.so
 %dir %{perl_vendorarch}/auto/nginx
 %{perl_vendorarch}/nginx.pm
 %{perl_vendorarch}/auto/nginx/nginx.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_perl_module.conf
 
 %files mod-http-image-filter
 %{nginx_moddir}/ngx_http_image_filter_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_image_filter_module.conf
 
 %files mod-http-geoip
 %{nginx_moddir}/ngx_http_geoip_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_geoip_module.conf
 
 %files mod-stream-geoip
 %{nginx_moddir}/ngx_stream_geoip_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_stream_geoip_module.conf
 
 %files mod-stream
 %{nginx_moddir}/ngx_stream_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/00-ngx_stream_module.conf
 
 %files mod-mail
 %{nginx_moddir}/ngx_mail_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_mail_module.conf
 
 %files mod-http-lua
 %{nginx_moddir}/ndk_http_module.so
 %{nginx_moddir}/ngx_http_lua_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ndk_http_module.conf
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_lua_module.conf
 
 %files mod-http-lua-upstream
 %{nginx_moddir}/ngx_http_lua_upstream_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_lua_upstream_module.conf
 
 %files mod-headers-more
 %{nginx_moddir}/ngx_http_headers_more_filter_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_headers_more_filter_module.conf
 
 %files mod-echo
 %{nginx_moddir}/ngx_http_echo_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_echo_module.conf
 
 %files mod-set-misc
 %{nginx_moddir}/ngx_http_set_misc_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_set_misc_module.conf
 
 %files mod-memc
 %{nginx_moddir}/ngx_http_memc_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_memc_module.conf
 
 %files mod-srcache
 %{nginx_moddir}/ngx_http_srcache_filter_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_srcache_filter_module.conf
 
 %files mod-redis2
 %{nginx_moddir}/ngx_http_redis2_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_redis2_module.conf
 
 %changelog
 * Fri Nov 03 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-2
