@@ -24,10 +24,10 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.4
-%global         main_release        2%{?dist}
+%global         main_release        3%{?dist}
 
 %global         ssl_name            libressl
-%global         ssl_version         2.5.5
+%global         ssl_version         2.6.3
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 
@@ -266,11 +266,11 @@ Requires:       %{name} = %{version}-%{main_release}
 CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags) -DNGX_LUA_ABORT_AT_PANIC}"; export CFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E}"; export LDFLAGS;
 
-pushd %{ssl_pkgname}
-./configure
-
-%make_build
-popd
+#pushd %{ssl_pkgname}
+#./configure
+#
+#%make_build
+#popd
 
 export LUAJIT_LIB=/usr/lib64
 export LUAJIT_INC=/usr/include/luajit-2.0
