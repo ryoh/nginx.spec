@@ -23,8 +23,8 @@
 %global         nginx_scgi_cachedir    %{nginx_tempdir}/scgi_cache
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.13.4
-%global         main_release        3%{?dist}
+%global         main_version        1.13.10
+%global         main_release        1%{?dist}
 
 %global         ssl_name            libressl
 %global         ssl_version         2.6.3
@@ -611,7 +611,9 @@ esac
 
 
 %changelog
-* Mon Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-3
+* Tue Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-1
+- Bumpup 1.13.10
+* Tue Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-3
 - Add naxsi module.
 - Add vts module.
 * Fri Nov 03 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-2
