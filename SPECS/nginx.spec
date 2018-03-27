@@ -76,6 +76,26 @@
 %global         mod_redis2_pkgname       %{mod_redis2_name}-%{mod_redis2_version}
 %global         mod_redis2_url           https://github.com/openresty/%{mod_redis2_name}/archive/v%{mod_redis2_version}.tar.gz#/%{mod_redis2_pkgname}.tar.gz
 
+%global         mod_drizzle_name         drizzle-nginx-module
+%global         mod_drizzle_version      0.1.10
+%global         mod_drizzle_pkgname      %{mod_drizzle_name}-%{mod_drizzle_version}
+%global         mod_drizzle_url          https://github.com/openresty/%{mod_drizzle_name}/archive/v%{mod_drizzle_version}.tar.gz#/%{mod_drizzle_pkgname}.tar.gz
+
+%global         mod_vts_name             nginx-module-vts
+%global         mod_vts_version          0.1.15
+%global         mod_vts_pkgname          %{mod_vts_name}-%{mod_vts_version}
+%global         mod_vts_url              https://github.com/vozlt/%{mod_vts_name}/archive/v%{mod_vts_version}.tar.gz#/%{mod_vts_pkgname}.tar.gz
+
+%global         mod_security_name        ModSecurity
+%global         mod_security_version     2.9.2
+%global         mod_security_pkgname     %{mod_security_name}-%{mod_security_version}
+%global         mod_security_url         https://github.com/SpiderLabs/%{mod_security_name}/archive/v%{mod_security_version}.tar.gz#/%{mod_security_pkgname}.tar.gz
+
+%global         mod_naxsi_name           naxsi
+%global         mod_naxsi_version        0.55.3
+%global         mod_naxsi_pkgname        %{mod_naxsi_name}-%{mod_naxsi_version}
+%global         mod_naxsi_url            https://github.com/nbs-system/%{mod_naxsi_name}/archive/%{mod_naxsi_version}.tar.gz#/%{mod_naxsi_pkgname}.tar.gz
+
 
 Name:           %{pkg_name}
 Version:        %{main_version}
@@ -101,6 +121,9 @@ Source205:      %{mod_set_misc_url}
 Source206:      %{mod_memc_url}
 Source207:      %{mod_srcache_url}
 Source208:      %{mod_redis2_url}
+Source209:      %{mod_vts_url}
+Source210:      %{mod_security_url}
+Source211:      %{mod_naxsi_url}
 
 Requires(pre):  shadow-utils
 %systemd_requires
@@ -108,6 +131,7 @@ BuildRequires:  systemd
 
 BuildRequires:  make gcc automake autoconf libtool
 BuildRequires:  zlib-devel pcre-devel
+BuildRequires:  apr apr-util
 
 
 %description
@@ -248,6 +272,22 @@ Requires:       %{name} = %{version}-%{main_release}
 %description mod-redis2
 %{summary}.
 
+%package mod-naxsi
+Summary:        nginx naxsi module
+Release:        %{mod_naxsi_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+
+%description mod-naxsi
+%{summary}.
+
+%package mod-vts
+Summary:        nginx virtualhost traffic status module
+Release:        %{mod_vts_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+
+%description mod-vts
+%{summary}.
+
 
 %prep
 %setup -q -n nginx-%{version} -a 100
@@ -260,6 +300,9 @@ Requires:       %{name} = %{version}-%{main_release}
 %__tar xf %{SOURCE206}
 %__tar xf %{SOURCE207}
 %__tar xf %{SOURCE208}
+%__tar xf %{SOURCE209}
+%__tar xf %{SOURCE210}
+%__tar xf %{SOURCE211}
 
 
 %build
@@ -338,6 +381,8 @@ export LUAJIT_INC=/usr/include/luajit-2.0
   --add-dynamic-module=%{mod_memc_pkgname} \
   --add-dynamic-module=%{mod_srcache_pkgname} \
   --add-dynamic-module=%{mod_redis2_pkgname} \
+  --add-dynamic-module=%{mod_vts_pkgname} \
+  --add-dynamic-module=%{mod_naxsi_pkgname}/naxsi_src \
 
 %make_build
 
@@ -556,7 +601,19 @@ esac
 %{nginx_moddir}/ngx_http_redis2_module.so
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_redis2_module.conf
 
+%files mod-naxsi
+%{nginx_moddir}/ngx_http_naxsi_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_naxsi_module.conf
+
+%files mod-vts
+%{nginx_moddir}/ngx_http_vhost_traffic_status_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_vhost_traffic_status_module.conf
+
+
 %changelog
+* Mon Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-3
+- Add naxsi module.
+- Add vts module.
 * Fri Nov 03 2017 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-2
 - Add http Lua module.
 - Add http Lua upstream module.
