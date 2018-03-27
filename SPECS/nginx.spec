@@ -21,13 +21,14 @@
 %global         nginx_fastcgi_cachedir %{nginx_tempdir}/fastcgi_cache
 %global         nginx_uwscgi_cachedir  %{nginx_tempdir}/uwscgi_cache
 %global         nginx_scgi_cachedir    %{nginx_tempdir}/scgi_cache
+%global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.10
-%global         main_release        1%{?dist}
+%global         main_release        3%{?dist}
 
 %global         ssl_name            libressl
-%global         ssl_version         2.6.3
+%global         ssl_version         2.6.4
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 
@@ -137,6 +138,14 @@ BuildRequires:  apr apr-util
 %description
 nginx [engine x] is an HTTP and reverse proxy server, a mail proxy server,
 and a generic TCP/UDP proxy server, originally written by Igor Sysoev.
+
+
+%package source
+Summary:        nginx source files
+Requires:       %{name} = %{version}-%{main_release}
+
+%description source
+%{summary}.
 
 
 %package mod-http-xslt
@@ -290,7 +299,7 @@ Requires:       %{name} = %{version}-%{main_release}
 
 
 %prep
-%setup -q -n nginx-%{version} -a 100
+%setup -q -n %{nginx_source_name} -a 100
 %__tar xf %{SOURCE200}
 %__tar xf %{SOURCE201}
 %__tar xf %{SOURCE202}
@@ -308,12 +317,6 @@ Requires:       %{name} = %{version}-%{main_release}
 %build
 CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags) -DNGX_LUA_ABORT_AT_PANIC}"; export CFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E}"; export LDFLAGS;
-
-#pushd %{ssl_pkgname}
-#./configure
-#
-#%make_build
-#popd
 
 export LUAJIT_LIB=/usr/lib64
 export LUAJIT_INC=/usr/include/luajit-2.0
@@ -438,9 +441,37 @@ for mod_fullpath in $(find %{buildroot}%{nginx_moddir} -type f -name '*.so'); do
 done
 %{__mv} %{buildroot}%{nginx_confdir}/conf.modules.d/{,00-}ngx_stream_module.conf
 
+# Add nginx sources
+%{__install} -p -d -m 0755 %{buildroot}%{_usrsrc}
+%{__cp} -Rp %{_builddir}/%{nginx_source_name} %{buildroot}%{_usrsrc}/%{nginx_source_name}
+
+pushd %{buildroot}%{_usrsrc}
+
+pushd ./%{nginx_source_name}/%{ssl_pkgname}
+%{__make} clean
+popd
+
+pushd ./%{nginx_source_name}
+%{__make} clean
+unlink CHANGES
+unlink CHANGES.ru
+unlink LICENSE
+unlink README
+
+find . -type d -name '.deps' -print0    | xargs -r -0 %{__rm} -rf
+find . -type d -name '.openssl' -print0 | xargs -r -0 %{__rm} -rf
+
+popd
+
+%{__tar} czf %{nginx_source_name}.tar.gz %{nginx_source_name}
+%{__rm}  -rf %{nginx_source_name}
+
+popd
+
 
 %clean
 %{__rm} -rf "%{buildroot}"
+
 
 %pre
 case $1 in
@@ -536,6 +567,9 @@ esac
 %dir %{nginx_uwscgi_cachedir}
 %dir %{nginx_scgi_cachedir}
 
+%files source
+%{_usrsrc}/%{nginx_source_name}.tar.gz
+
 %files mod-http-xslt
 %{nginx_moddir}/ngx_http_xslt_filter_module.so
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_xslt_filter_module.conf
@@ -611,6 +645,10 @@ esac
 
 
 %changelog
+* Tue Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-3
+- Add nginx sources.
+* Tue Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-2
+- Bumpup libressl 2.6.4
 * Tue Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-1
 - Bumpup 1.13.10
 * Tue Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.4-3
