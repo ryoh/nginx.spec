@@ -27,7 +27,7 @@
 %global         main_release        1%{?dist}
 
 %global         ssl_name            libressl
-%global         ssl_version         2.6.3
+%global         ssl_version         2.6.4
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 
