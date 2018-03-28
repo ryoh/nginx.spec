@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.10
-%global         main_release        4%{?dist}
+%global         main_release        5%{?dist}
 
 %global         ssl_name            libressl
 %global         ssl_version         2.6.4
@@ -128,8 +128,10 @@ Source211:      %{mod_naxsi_url}
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
-%systemd_requires
-BuildRequires:  systemd
+Requires(post):   systemd 
+Requires(preun):  systemd 
+Requires(postun): systemd 
+BuildRequires:    systemd
 
 BuildRequires:  make gcc automake autoconf libtool
 BuildRequires:  zlib-devel pcre-devel
@@ -647,6 +649,8 @@ esac
 
 
 %changelog
+* Wed Mar 28 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-5
+- Bug fix copr build error.
 * Wed Mar 28 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-4
 - implement jemalloc
 * Tue Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-3
