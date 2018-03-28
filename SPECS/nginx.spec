@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.10
-%global         main_release        3%{?dist}
+%global         main_release        4%{?dist}
 
 %global         ssl_name            libressl
 %global         ssl_version         2.6.4
@@ -126,6 +126,7 @@ Source209:      %{mod_vts_url}
 Source210:      %{mod_security_url}
 Source211:      %{mod_naxsi_url}
 
+Requires:       jemalloc
 Requires(pre):  shadow-utils
 %systemd_requires
 BuildRequires:  systemd
@@ -133,6 +134,7 @@ BuildRequires:  systemd
 BuildRequires:  make gcc automake autoconf libtool
 BuildRequires:  zlib-devel pcre-devel
 BuildRequires:  apr apr-util
+BuildRequires:  jemalloc-devel
 
 
 %description
@@ -316,7 +318,7 @@ Requires:       %{name} = %{version}-%{main_release}
 
 %build
 CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags) -DNGX_LUA_ABORT_AT_PANIC}"; export CFLAGS;
-LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E}"; export LDFLAGS;
+LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 
 export LUAJIT_LIB=/usr/lib64
 export LUAJIT_INC=/usr/include/luajit-2.0
@@ -645,6 +647,8 @@ esac
 
 
 %changelog
+* Wed Mar 28 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-4
+- implement jemalloc
 * Tue Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-3
 - Add nginx sources.
 * Tue Mar 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-2
