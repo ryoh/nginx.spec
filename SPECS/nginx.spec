@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.10
-%global         main_release        5%{?dist}
+%global         main_release        6%{?dist}
 
 %global         ssl_name            libressl
 %global         ssl_version         2.6.4
@@ -97,6 +97,12 @@
 %global         mod_naxsi_pkgname        %{mod_naxsi_name}-%{mod_naxsi_version}
 %global         mod_naxsi_url            https://github.com/nbs-system/%{mod_naxsi_name}/archive/%{mod_naxsi_version}.tar.gz#/%{mod_naxsi_pkgname}.tar.gz
 
+%global         mod_pagespeed_name       pagespeed
+%global         mod_pagespeed_version    1.13.35.2
+%global         mod_pagespeed_pkgname    %{mod_pagespeed_name}-%{mod_pagespeed_version}
+%global         mod_pagespeed_url        https://github.com/apache/incubator-pagespeed-ngx/archive/v%{mod_pagespeed_version}-stable.tar.gz#/%{mod_pagespeed_pkgname}-stable.tar.gz
+%global         psol_url                 https://dl.google.com/dl/page-speed/psol/%{mod_pagespeed_version}-x64.tar.gz
+
 
 Name:           %{pkg_name}
 Version:        %{main_version}
@@ -125,6 +131,8 @@ Source208:      %{mod_redis2_url}
 Source209:      %{mod_vts_url}
 Source210:      %{mod_security_url}
 Source211:      %{mod_naxsi_url}
+Source212:      %{mod_pagespeed_url}
+Source213:      %{psol_url}
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -301,6 +309,15 @@ Requires:       %{name} = %{version}-%{main_release}
 %description mod-vts
 %{summary}.
 
+%package mod-pagespeed
+Summary:        nginx pagespeed module
+Release:        %{mod_pagespeed_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+BuildRequires:  gcc-c++ libuuid-devel
+
+%description mod-pagespeed
+%{summary}.
+
 
 %prep
 %setup -q -n %{nginx_source_name} -a 100
@@ -316,6 +333,13 @@ Requires:       %{name} = %{version}-%{main_release}
 %__tar xf %{SOURCE209}
 %__tar xf %{SOURCE210}
 %__tar xf %{SOURCE211}
+
+# Pagespeed
+%__mkdir %{mod_pagespeed_pkgname}
+%__tar xf %{SOURCE212} -C %{mod_pagespeed_pkgname} --strip-components 1
+pushd %{mod_pagespeed_pkgname}
+%__tar xf %{SOURCE213}
+popd
 
 
 %build
@@ -390,6 +414,7 @@ export LUAJIT_INC=/usr/include/luajit-2.0
   --add-dynamic-module=%{mod_redis2_pkgname} \
   --add-dynamic-module=%{mod_vts_pkgname} \
   --add-dynamic-module=%{mod_naxsi_pkgname}/naxsi_src \
+  --add-dynamic-module=%{mod_pagespeed_pkgname} \
 
 %make_build
 
@@ -647,8 +672,14 @@ esac
 %{nginx_moddir}/ngx_http_vhost_traffic_status_module.so
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_vhost_traffic_status_module.conf
 
+%files mod-pagespeed
+%{nginx_moddir}/ngx_pagespeed.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_pagespeed.conf
+
 
 %changelog
+* Thu Mar 29 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-6
+- Add pagespeed module.
 * Wed Mar 28 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-5
 - Bug fix copr build error.
 * Wed Mar 28 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-4
