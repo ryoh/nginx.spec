@@ -42,6 +42,13 @@
 %global         mod_lua_pkgname     %{mod_lua_name}-%{mod_lua_version}
 %global         mod_lua_url         https://github.com/openresty/%{mod_lua_name}/archive/v%{mod_lua_version}.tar.gz#/%{mod_lua_pkgname}.tar.gz
 
+%if 0%{?rhel} >= 7
+  %global luajit_inc_path /usr/include/luajit-2.0
+%endif
+%if 0%{?fedora} >= 26
+  %global luajit_inc_path /usr/include/luajit-2.1
+%endif
+
 %global         mod_lua_upstream_name    lua-upstream-nginx-module
 %global         mod_lua_upstream_version 0.07
 %global         mod_lua_upstream_pkgname %{mod_lua_upstream_name}-%{mod_lua_upstream_version}
@@ -347,7 +354,7 @@ CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags) -DNGX_LUA_ABORT_AT_PA
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 
 export LUAJIT_LIB=/usr/lib64
-export LUAJIT_INC=/usr/include/luajit-2.0
+export LUAJIT_INC=%{luajit_inc_path}
 
 ./configure \
   --with-cc-opt="${CFLAGS}" \
