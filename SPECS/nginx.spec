@@ -110,6 +110,11 @@
 %global         mod_pagespeed_url        https://github.com/apache/incubator-pagespeed-ngx/archive/v%{mod_pagespeed_version}-stable.tar.gz#/%{mod_pagespeed_pkgname}-stable.tar.gz
 %global         psol_url                 https://dl.google.com/dl/page-speed/psol/%{mod_pagespeed_version}-x64.tar.gz
 
+%global         mod_cache_purge_name     ngx_cache_purge
+%global         mod_cache_purge_version  2.4.2
+%global         mod_cache_purge_pkgname  %{mod_cache_purge_name}-%{mod_cache_purge_version}
+%global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
+
 
 Name:           %{pkg_name}
 Version:        %{main_version}
@@ -140,6 +145,7 @@ Source210:      %{mod_security_url}
 Source211:      %{mod_naxsi_url}
 Source212:      %{mod_pagespeed_url}
 Source213:      %{psol_url}
+Source214:      %{mod_cache_purge_url}
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -325,6 +331,14 @@ BuildRequires:  gcc-c++ libuuid-devel
 %description mod-pagespeed
 %{summary}.
 
+%package mod-cache-purge
+Summary:        nginx cache purge module
+Release:        %{mod_cache_purge_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+
+%description mod-cache-purge
+%{summary}.
+
 
 %prep
 %setup -q -n %{nginx_source_name} -a 100
@@ -340,6 +354,7 @@ BuildRequires:  gcc-c++ libuuid-devel
 %__tar xf %{SOURCE209}
 %__tar xf %{SOURCE210}
 %__tar xf %{SOURCE211}
+%__tar xf %{SOURCE214}
 
 # Pagespeed
 %__mkdir %{mod_pagespeed_pkgname}
@@ -422,6 +437,7 @@ export LUAJIT_INC=%{luajit_inc_path}
   --add-dynamic-module=%{mod_vts_pkgname} \
   --add-dynamic-module=%{mod_naxsi_pkgname}/naxsi_src \
   --add-dynamic-module=%{mod_pagespeed_pkgname} \
+  --add-dynamic-module=%{mod_cache_purge_pkgname} \
 
 %make_build
 
@@ -683,8 +699,15 @@ esac
 %{nginx_moddir}/ngx_pagespeed.so
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_pagespeed.conf
 
+%files mod-cache-purge
+%{nginx_moddir}/ngx_http_cache_purge_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_cache_purge_module.conf
+
 
 %changelog
+* Mon Apr 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-8
+- Add fedora support.
+- Add cache purge module.
 * Mon Apr 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-7
 - Bumped libressl 2.7.2
 * Thu Mar 29 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-6
