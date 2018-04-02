@@ -25,10 +25,10 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.10
-%global         main_release        6%{?dist}
+%global         main_release        7%{?dist}
 
 %global         ssl_name            libressl
-%global         ssl_version         2.6.4
+%global         ssl_version         2.7.2
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 
@@ -678,6 +678,8 @@ esac
 
 
 %changelog
+* Mon Apr 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-7
+- Bumped libressl 2.7.2
 * Thu Mar 29 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-6
 - Add pagespeed module.
 * Wed Mar 28 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-5
