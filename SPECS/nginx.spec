@@ -115,6 +115,11 @@
 %global         mod_cache_purge_pkgname  %{mod_cache_purge_name}-%{mod_cache_purge_version}
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
+%global         mod_njs_name             njs
+%global         mod_njs_version          0.1.15
+%global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
+%global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
+
 
 Name:           %{pkg_name}
 Version:        %{main_version}
@@ -146,6 +151,7 @@ Source211:      %{mod_naxsi_url}
 Source212:      %{mod_pagespeed_url}
 Source213:      %{psol_url}
 Source214:      %{mod_cache_purge_url}
+Source215:      %{mod_njs_url}
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -249,6 +255,7 @@ BuildRequires:  luajit-devel
 %description mod-http-lua
 %{summary}.
 
+
 %package mod-http-lua-upstream
 Summary:        nginx Lua upstream module (for http module)
 Release:        %{mod_lua_upstream_version}.%{main_release}
@@ -258,6 +265,7 @@ Requires:       %{name}-mod-http-lua
 %description mod-http-lua-upstream
 %{summary}.
 
+
 %package mod-headers-more
 Summary:        nginx headers more module
 Release:        %{mod_headers_more_version}.%{main_release}
@@ -265,6 +273,7 @@ Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-headers-more
 %{summary}.
+
 
 %package mod-echo
 Summary:        nginx echo module
@@ -274,6 +283,7 @@ Requires:       %{name} = %{version}-%{main_release}
 %description mod-echo
 %{summary}.
 
+
 %package mod-set-misc
 Summary:        nginx set misc module
 Release:        %{mod_set_misc_version}.%{main_release}
@@ -281,6 +291,7 @@ Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-set-misc
 %{summary}.
+
 
 %package mod-memc
 Summary:        nginx memc module
@@ -290,6 +301,7 @@ Requires:       %{name} = %{version}-%{main_release}
 %description mod-memc
 %{summary}.
 
+
 %package mod-srcache
 Summary:        nginx srcache module
 Release:        %{mod_srcache_version}.%{main_release}
@@ -297,6 +309,7 @@ Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-srcache
 %{summary}.
+
 
 %package mod-redis2
 Summary:        nginx redis2 module
@@ -306,6 +319,7 @@ Requires:       %{name} = %{version}-%{main_release}
 %description mod-redis2
 %{summary}.
 
+
 %package mod-naxsi
 Summary:        nginx naxsi module
 Release:        %{mod_naxsi_version}.%{main_release}
@@ -314,6 +328,7 @@ Requires:       %{name} = %{version}-%{main_release}
 %description mod-naxsi
 %{summary}.
 
+
 %package mod-vts
 Summary:        nginx virtualhost traffic status module
 Release:        %{mod_vts_version}.%{main_release}
@@ -321,6 +336,7 @@ Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-vts
 %{summary}.
+
 
 %package mod-pagespeed
 Summary:        nginx pagespeed module
@@ -331,12 +347,22 @@ BuildRequires:  gcc-c++ libuuid-devel
 %description mod-pagespeed
 %{summary}.
 
+
 %package mod-cache-purge
 Summary:        nginx cache purge module
 Release:        %{mod_cache_purge_version}.%{main_release}
 Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-cache-purge
+%{summary}.
+
+
+%package mod-njs
+Summary:        nginx nginScript module
+Release:        %{mod_njs_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+
+%description mod-njs
 %{summary}.
 
 
@@ -355,6 +381,7 @@ Requires:       %{name} = %{version}-%{main_release}
 %__tar xf %{SOURCE210}
 %__tar xf %{SOURCE211}
 %__tar xf %{SOURCE214}
+%__tar xf %{SOURCE215}
 
 # Pagespeed
 %__mkdir %{mod_pagespeed_pkgname}
@@ -438,6 +465,7 @@ export LUAJIT_INC=%{luajit_inc_path}
   --add-dynamic-module=%{mod_naxsi_pkgname}/naxsi_src \
   --add-dynamic-module=%{mod_pagespeed_pkgname} \
   --add-dynamic-module=%{mod_cache_purge_pkgname} \
+  --add-dynamic-module=%{mod_njs_pkgname}/nginx \
 
 %make_build
 
@@ -703,11 +731,18 @@ esac
 %{nginx_moddir}/ngx_http_cache_purge_module.so
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_cache_purge_module.conf
 
+%files mod-njs
+%{nginx_moddir}/ngx_http_js_module.so
+%{nginx_moddir}/ngx_stream_js_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_js_module.conf
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_stream_js_module.conf
+
 
 %changelog
 * Mon Apr 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-8
 - Add fedora support.
 - Add cache purge module.
+- Add nginScript module.
 * Mon Apr 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-7
 - Bumped libressl 2.7.2
 * Thu Mar 29 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-6
