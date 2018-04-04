@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.10
-%global         main_release        7%{?dist}
+%global         main_release        8%{?dist}
 
 %global         ssl_name            libressl
 %global         ssl_version         2.7.2
@@ -108,6 +108,16 @@
 %global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
+%global         mod_brotli_name          ngx_brotli
+%global         mod_brotli_version       6a1174446f5a866d3d13615dd2824177570f0a69
+%global         mod_brotli_pkgname       %{mod_brotli_name}-%{mod_brotli_version}
+%global         mod_brotli_url           https://github.com/eustas/%{mod_brotli_name}/archive/%{mod_brotli_version}.tar.gz#/%{mod_brotli_pkgname}.tar.gz
+
+%global         brotli_name              brotli
+%global         brotli_version           1.0.2
+%global         brotli_pkgname           %{brotli_name}-%{brotli_version}
+%global         brotli_url               https://github.com/google/%{brotli_name}/archive/v%{brotli_version}.tar.gz#/%{brotli_pkgname}.tar.gz
+
 
 Name:           %{pkg_name}
 Version:        %{main_version}
@@ -140,6 +150,8 @@ Source212:      %{mod_pagespeed_url}
 Source213:      %{psol_url}
 Source214:      %{mod_cache_purge_url}
 Source215:      %{mod_njs_url}
+Source216:      %{mod_brotli_url}
+Source217:      %{brotli_url}
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -354,6 +366,15 @@ Requires:       %{name} = %{version}-%{main_release}
 %{summary}.
 
 
+%package mod-brotli
+Summary:        nginx brotli module
+Release:        %{mod_brotli_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+
+%description mod-brotli
+%{summary}.
+
+
 %prep
 %setup -q -n %{nginx_source_name} -a 100
 %__tar xf %{SOURCE200}
@@ -375,6 +396,12 @@ Requires:       %{name} = %{version}-%{main_release}
 %__tar xf %{SOURCE212} -C %{mod_pagespeed_pkgname} --strip-components 1
 pushd %{mod_pagespeed_pkgname}
 %__tar xf %{SOURCE213}
+popd
+
+# Brotli
+%__tar xf %{SOURCE216}
+pushd %{mod_brotli_pkgname}/deps
+%__tar xf %{SOURCE217} -C brotli --strip-components 1
 popd
 
 
@@ -453,6 +480,7 @@ export LUAJIT_INC=$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')
   --add-dynamic-module=%{mod_pagespeed_pkgname} \
   --add-dynamic-module=%{mod_cache_purge_pkgname} \
   --add-dynamic-module=%{mod_njs_pkgname}/nginx \
+  --add-dynamic-module=%{mod_brotli_pkgname} \
 
 %make_build
 
@@ -724,12 +752,19 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_js_module.conf
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_stream_js_module.conf
 
+%files mod-brotli
+%{nginx_moddir}/ngx_http_brotli_filter_module.so
+%{nginx_moddir}/ngx_http_brotli_static_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_brotli_filter_module.conf
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_brotli_static_module.conf
+
 
 %changelog
-* Mon Apr 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-8
+* Wed Apr 04 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-8
 - Add fedora support.
 - Add cache purge module.
 - Add nginScript module.
+- Add brotli module.
 * Mon Apr 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-7
 - Bumped libressl 2.7.2
 * Thu Mar 29 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-6
