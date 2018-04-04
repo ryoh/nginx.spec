@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.13.10
-%global         main_release        7%{?dist}
+%global         main_release        8%{?dist}
 
 %global         ssl_name            libressl
 %global         ssl_version         2.7.2
@@ -87,11 +87,6 @@
 %global         mod_vts_pkgname          %{mod_vts_name}-%{mod_vts_version}
 %global         mod_vts_url              https://github.com/vozlt/%{mod_vts_name}/archive/v%{mod_vts_version}.tar.gz#/%{mod_vts_pkgname}.tar.gz
 
-%global         mod_security_name        ModSecurity
-%global         mod_security_version     2.9.2
-%global         mod_security_pkgname     %{mod_security_name}-%{mod_security_version}
-%global         mod_security_url         https://github.com/SpiderLabs/%{mod_security_name}/archive/v%{mod_security_version}.tar.gz#/%{mod_security_pkgname}.tar.gz
-
 %global         mod_naxsi_name           naxsi
 %global         mod_naxsi_version        0.55.3
 %global         mod_naxsi_pkgname        %{mod_naxsi_name}-%{mod_naxsi_version}
@@ -102,6 +97,26 @@
 %global         mod_pagespeed_pkgname    %{mod_pagespeed_name}-%{mod_pagespeed_version}
 %global         mod_pagespeed_url        https://github.com/apache/incubator-pagespeed-ngx/archive/v%{mod_pagespeed_version}-stable.tar.gz#/%{mod_pagespeed_pkgname}-stable.tar.gz
 %global         psol_url                 https://dl.google.com/dl/page-speed/psol/%{mod_pagespeed_version}-x64.tar.gz
+
+%global         mod_cache_purge_name     ngx_cache_purge
+%global         mod_cache_purge_version  2.4.2
+%global         mod_cache_purge_pkgname  %{mod_cache_purge_name}-%{mod_cache_purge_version}
+%global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
+
+%global         mod_njs_name             njs
+%global         mod_njs_version          0.1.15
+%global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
+%global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
+
+%global         mod_brotli_name          ngx_brotli
+%global         mod_brotli_version       6a1174446f5a866d3d13615dd2824177570f0a69
+%global         mod_brotli_pkgname       %{mod_brotli_name}-%{mod_brotli_version}
+%global         mod_brotli_url           https://github.com/eustas/%{mod_brotli_name}/archive/%{mod_brotli_version}.tar.gz#/%{mod_brotli_pkgname}.tar.gz
+
+%global         brotli_name              brotli
+%global         brotli_version           1.0.2
+%global         brotli_pkgname           %{brotli_name}-%{brotli_version}
+%global         brotli_url               https://github.com/google/%{brotli_name}/archive/v%{brotli_version}.tar.gz#/%{brotli_pkgname}.tar.gz
 
 
 Name:           %{pkg_name}
@@ -129,10 +144,14 @@ Source206:      %{mod_memc_url}
 Source207:      %{mod_srcache_url}
 Source208:      %{mod_redis2_url}
 Source209:      %{mod_vts_url}
-Source210:      %{mod_security_url}
+
 Source211:      %{mod_naxsi_url}
 Source212:      %{mod_pagespeed_url}
 Source213:      %{psol_url}
+Source214:      %{mod_cache_purge_url}
+Source215:      %{mod_njs_url}
+Source216:      %{mod_brotli_url}
+Source217:      %{brotli_url}
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -236,6 +255,7 @@ BuildRequires:  luajit-devel
 %description mod-http-lua
 %{summary}.
 
+
 %package mod-http-lua-upstream
 Summary:        nginx Lua upstream module (for http module)
 Release:        %{mod_lua_upstream_version}.%{main_release}
@@ -245,6 +265,7 @@ Requires:       %{name}-mod-http-lua
 %description mod-http-lua-upstream
 %{summary}.
 
+
 %package mod-headers-more
 Summary:        nginx headers more module
 Release:        %{mod_headers_more_version}.%{main_release}
@@ -252,6 +273,7 @@ Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-headers-more
 %{summary}.
+
 
 %package mod-echo
 Summary:        nginx echo module
@@ -261,6 +283,7 @@ Requires:       %{name} = %{version}-%{main_release}
 %description mod-echo
 %{summary}.
 
+
 %package mod-set-misc
 Summary:        nginx set misc module
 Release:        %{mod_set_misc_version}.%{main_release}
@@ -268,6 +291,7 @@ Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-set-misc
 %{summary}.
+
 
 %package mod-memc
 Summary:        nginx memc module
@@ -277,6 +301,7 @@ Requires:       %{name} = %{version}-%{main_release}
 %description mod-memc
 %{summary}.
 
+
 %package mod-srcache
 Summary:        nginx srcache module
 Release:        %{mod_srcache_version}.%{main_release}
@@ -284,6 +309,7 @@ Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-srcache
 %{summary}.
+
 
 %package mod-redis2
 Summary:        nginx redis2 module
@@ -293,6 +319,7 @@ Requires:       %{name} = %{version}-%{main_release}
 %description mod-redis2
 %{summary}.
 
+
 %package mod-naxsi
 Summary:        nginx naxsi module
 Release:        %{mod_naxsi_version}.%{main_release}
@@ -300,6 +327,7 @@ Requires:       %{name} = %{version}-%{main_release}
 
 %description mod-naxsi
 %{summary}.
+
 
 %package mod-vts
 Summary:        nginx virtualhost traffic status module
@@ -309,6 +337,7 @@ Requires:       %{name} = %{version}-%{main_release}
 %description mod-vts
 %{summary}.
 
+
 %package mod-pagespeed
 Summary:        nginx pagespeed module
 Release:        %{mod_pagespeed_version}.%{main_release}
@@ -316,6 +345,33 @@ Requires:       %{name} = %{version}-%{main_release}
 BuildRequires:  gcc-c++ libuuid-devel
 
 %description mod-pagespeed
+%{summary}.
+
+
+%package mod-cache-purge
+Summary:        nginx cache purge module
+Release:        %{mod_cache_purge_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+
+%description mod-cache-purge
+%{summary}.
+
+
+%package mod-njs
+Summary:        nginx nginScript module
+Release:        %{mod_njs_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+
+%description mod-njs
+%{summary}.
+
+
+%package mod-brotli
+Summary:        nginx brotli module
+Release:        %{mod_brotli_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+
+%description mod-brotli
 %{summary}.
 
 
@@ -331,8 +387,9 @@ BuildRequires:  gcc-c++ libuuid-devel
 %__tar xf %{SOURCE207}
 %__tar xf %{SOURCE208}
 %__tar xf %{SOURCE209}
-%__tar xf %{SOURCE210}
 %__tar xf %{SOURCE211}
+%__tar xf %{SOURCE214}
+%__tar xf %{SOURCE215}
 
 # Pagespeed
 %__mkdir %{mod_pagespeed_pkgname}
@@ -341,13 +398,19 @@ pushd %{mod_pagespeed_pkgname}
 %__tar xf %{SOURCE213}
 popd
 
+# Brotli
+%__tar xf %{SOURCE216}
+pushd %{mod_brotli_pkgname}/deps
+%__tar xf %{SOURCE217} -C brotli --strip-components 1
+popd
+
 
 %build
 CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags) -DNGX_LUA_ABORT_AT_PANIC}"; export CFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 
 export LUAJIT_LIB=/usr/lib64
-export LUAJIT_INC=/usr/include/luajit-2.0
+export LUAJIT_INC=$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')
 
 ./configure \
   --with-cc-opt="${CFLAGS}" \
@@ -415,6 +478,9 @@ export LUAJIT_INC=/usr/include/luajit-2.0
   --add-dynamic-module=%{mod_vts_pkgname} \
   --add-dynamic-module=%{mod_naxsi_pkgname}/naxsi_src \
   --add-dynamic-module=%{mod_pagespeed_pkgname} \
+  --add-dynamic-module=%{mod_cache_purge_pkgname} \
+  --add-dynamic-module=%{mod_njs_pkgname}/nginx \
+  --add-dynamic-module=%{mod_brotli_pkgname} \
 
 %make_build
 
@@ -676,8 +742,29 @@ esac
 %{nginx_moddir}/ngx_pagespeed.so
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_pagespeed.conf
 
+%files mod-cache-purge
+%{nginx_moddir}/ngx_http_cache_purge_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_cache_purge_module.conf
+
+%files mod-njs
+%{nginx_moddir}/ngx_http_js_module.so
+%{nginx_moddir}/ngx_stream_js_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_js_module.conf
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_stream_js_module.conf
+
+%files mod-brotli
+%{nginx_moddir}/ngx_http_brotli_filter_module.so
+%{nginx_moddir}/ngx_http_brotli_static_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_brotli_filter_module.conf
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_brotli_static_module.conf
+
 
 %changelog
+* Wed Apr 04 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-8
+- Add fedora support.
+- Add cache purge module.
+- Add nginScript module.
+- Add brotli module.
 * Mon Apr 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-7
 - Bumped libressl 2.7.2
 * Thu Mar 29 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-6
