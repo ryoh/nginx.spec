@@ -87,11 +87,6 @@
 %global         mod_vts_pkgname          %{mod_vts_name}-%{mod_vts_version}
 %global         mod_vts_url              https://github.com/vozlt/%{mod_vts_name}/archive/v%{mod_vts_version}.tar.gz#/%{mod_vts_pkgname}.tar.gz
 
-%global         mod_security_name        ModSecurity
-%global         mod_security_version     2.9.2
-%global         mod_security_pkgname     %{mod_security_name}-%{mod_security_version}
-%global         mod_security_url         https://github.com/SpiderLabs/%{mod_security_name}/archive/v%{mod_security_version}.tar.gz#/%{mod_security_pkgname}.tar.gz
-
 %global         mod_naxsi_name           naxsi
 %global         mod_naxsi_version        0.55.3
 %global         mod_naxsi_pkgname        %{mod_naxsi_name}-%{mod_naxsi_version}
@@ -139,7 +134,7 @@ Source206:      %{mod_memc_url}
 Source207:      %{mod_srcache_url}
 Source208:      %{mod_redis2_url}
 Source209:      %{mod_vts_url}
-Source210:      %{mod_security_url}
+
 Source211:      %{mod_naxsi_url}
 Source212:      %{mod_pagespeed_url}
 Source213:      %{psol_url}
@@ -371,7 +366,6 @@ Requires:       %{name} = %{version}-%{main_release}
 %__tar xf %{SOURCE207}
 %__tar xf %{SOURCE208}
 %__tar xf %{SOURCE209}
-%__tar xf %{SOURCE210}
 %__tar xf %{SOURCE211}
 %__tar xf %{SOURCE214}
 %__tar xf %{SOURCE215}
