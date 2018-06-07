@@ -24,11 +24,11 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.13.11
+%global         main_version        1.15.0
 %global         main_release        1%{?dist}
 
 %global         ssl_name            libressl
-%global         ssl_version         2.7.2
+%global         ssl_version         2.7.3
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 
@@ -38,7 +38,7 @@
 %global         mod_ndk_url         https://github.com/simpl/%{mod_ndk_name}/archive/v%{mod_ndk_version}.tar.gz#/%{mod_ndk_pkgname}.tar.gz
 
 %global         mod_lua_name        lua-nginx-module
-%global         mod_lua_version     0.10.10
+%global         mod_lua_version     0.10.13
 %global         mod_lua_pkgname     %{mod_lua_name}-%{mod_lua_version}
 %global         mod_lua_url         https://github.com/openresty/%{mod_lua_name}/archive/v%{mod_lua_version}.tar.gz#/%{mod_lua_pkgname}.tar.gz
 
@@ -83,7 +83,7 @@
 %global         mod_drizzle_url          https://github.com/openresty/%{mod_drizzle_name}/archive/v%{mod_drizzle_version}.tar.gz#/%{mod_drizzle_pkgname}.tar.gz
 
 %global         mod_vts_name             nginx-module-vts
-%global         mod_vts_version          0.1.15
+%global         mod_vts_version          0.1.16
 %global         mod_vts_pkgname          %{mod_vts_name}-%{mod_vts_version}
 %global         mod_vts_url              https://github.com/vozlt/%{mod_vts_name}/archive/v%{mod_vts_version}.tar.gz#/%{mod_vts_pkgname}.tar.gz
 
