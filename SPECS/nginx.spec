@@ -58,12 +58,12 @@
 %global         mod_echo_url             https://github.com/openresty/%{mod_echo_name}/archive/v%{mod_echo_version}.tar.gz#/%{mod_echo_pkgname}.tar.gz
 
 %global         mod_set_misc_name        set-misc-nginx-module
-%global         mod_set_misc_version     0.31
+%global         mod_set_misc_version     0.32
 %global         mod_set_misc_pkgname     %{mod_set_misc_name}-%{mod_set_misc_version}
 %global         mod_set_misc_url         https://github.com/openresty/%{mod_set_misc_name}/archive/v%{mod_set_misc_version}.tar.gz#/%{mod_set_misc_pkgname}.tar.gz
 
 %global         mod_memc_name            memc-nginx-module
-%global         mod_memc_version         0.18
+%global         mod_memc_version         0.19
 %global         mod_memc_pkgname         %{mod_memc_name}-%{mod_memc_version}
 %global         mod_memc_url             https://github.com/openresty/%{mod_memc_name}/archive/v%{mod_memc_version}.tar.gz#/%{mod_memc_pkgname}.tar.gz
 
@@ -73,7 +73,7 @@
 %global         mod_srcache_url          https://github.com/openresty/%{mod_srcache_name}/archive/v%{mod_srcache_version}.tar.gz#/%{mod_srcache_pkgname}.tar.gz
 
 %global         mod_redis2_name          redis2-nginx-module
-%global         mod_redis2_version       0.14
+%global         mod_redis2_version       0.15
 %global         mod_redis2_pkgname       %{mod_redis2_name}-%{mod_redis2_version}
 %global         mod_redis2_url           https://github.com/openresty/%{mod_redis2_name}/archive/v%{mod_redis2_version}.tar.gz#/%{mod_redis2_pkgname}.tar.gz
 
@@ -83,7 +83,7 @@
 %global         mod_drizzle_url          https://github.com/openresty/%{mod_drizzle_name}/archive/v%{mod_drizzle_version}.tar.gz#/%{mod_drizzle_pkgname}.tar.gz
 
 %global         mod_vts_name             nginx-module-vts
-%global         mod_vts_version          0.1.16
+%global         mod_vts_version          0.1.18
 %global         mod_vts_pkgname          %{mod_vts_name}-%{mod_vts_version}
 %global         mod_vts_url              https://github.com/vozlt/%{mod_vts_name}/archive/v%{mod_vts_version}.tar.gz#/%{mod_vts_pkgname}.tar.gz
 
@@ -104,17 +104,17 @@
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
 %global         mod_njs_name             njs
-%global         mod_njs_version          0.2.0
+%global         mod_njs_version          0.2.2
 %global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
 %global         mod_brotli_name          ngx_brotli
-%global         mod_brotli_version       6a1174446f5a866d3d13615dd2824177570f0a69
+%global         mod_brotli_version       0.1.2
 %global         mod_brotli_pkgname       %{mod_brotli_name}-%{mod_brotli_version}
-%global         mod_brotli_url           https://github.com/eustas/%{mod_brotli_name}/archive/%{mod_brotli_version}.tar.gz#/%{mod_brotli_pkgname}.tar.gz
+%global         mod_brotli_url           https://github.com/eustas/%{mod_brotli_name}/archive/v%{mod_brotli_version}.tar.gz#/%{mod_brotli_pkgname}.tar.gz
 
 %global         brotli_name              brotli
-%global         brotli_version           1.0.2
+%global         brotli_version           1.0.4
 %global         brotli_pkgname           %{brotli_name}-%{brotli_version}
 %global         brotli_url               https://github.com/google/%{brotli_name}/archive/v%{brotli_version}.tar.gz#/%{brotli_pkgname}.tar.gz
 
