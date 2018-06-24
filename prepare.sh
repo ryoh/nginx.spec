@@ -26,3 +26,5 @@ fi
 
 : "Set .rpmmacros file to home directory"
 ln -sf "${PWD}/${RPMMACROS_FILE}" "${HOME_RPMMACROS}"
+
+spectool -g -R -C SOURCES/ SPECS/nginx.spec
