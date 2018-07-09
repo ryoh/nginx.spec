@@ -131,6 +131,14 @@ Source0:        https://nginx.org/download/nginx-%{main_version}.tar.gz
 Source1:        https://nginx.org/download/nginx-%{main_version}.tar.gz.asc
 Source10:       nginx.service
 Source11:       nginx.sysconf
+Source12:       nginx.logrotate
+Source13:       nginx.conf
+Source14:       nginx-http.conf
+Source15:       nginx-http-log_format.conf
+Source16:       nginx-http-client.conf
+Source17:       nginx-http-proxy.conf
+Source18:       nginx-http-gzip.conf
+
 Source100:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
 
@@ -515,14 +523,40 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_scgi_cachedir}
 
 # Add systemd service unit file
-%{__install} -p -D -m 0644 %{SOURCE10} %{buildroot}%{_unitdir}/%{name}.service
+%{__install} -p -D -m 0644 %{SOURCE10} %{buildroot}%{_unitdir}/nginx.service
+
+# sysconfig
+%{__install} -p -D -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/sysconfig/nginx
+
+# logrotate
+%{__install} -p -D -m 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/logrotate.d/nginx
+
+# nginx config
+unlink %{buildroot}%{nginx_confdir}/koi-utf
+unlink %{buildroot}%{nginx_confdir}/koi-win
+unlink %{buildroot}%{nginx_confdir}/win-utf
+%{__install} -p -D -m 0644 %{SOURCE13} %{buildroot}%{nginx_confdir}/nginx.conf
+%{__install} -p -D -m 0644 %{SOURCE14} %{buildroot}%{nginx_confdir}/conf.d/http.conf
+%{__install} -p -D -m 0644 %{SOURCE15} %{buildroot}%{nginx_confdir}/conf.d/http/log_format.conf
+%{__install} -p -D -m 0644 %{SOURCE16} %{buildroot}%{nginx_confdir}/conf.d/http/client.conf
+%{__install} -p -D -m 0644 %{SOURCE17} %{buildroot}%{nginx_confdir}/conf.d/http/proxy.conf
+%{__install} -p -D -m 0644 %{SOURCE18} %{buildroot}%{nginx_confdir}/conf.d/http/gzip.conf
+
+# nginx reset paths
 %{__sed} -i \
   -e 's|${rundir}|%{_rundir}|g' \
   -e 's|${sbindir}|%{_sbindir}|g' \
-  -e 's|${pkg_name}|%{name}|g' \
-  %{buildroot}%{_unitdir}/%{name}.service
+  -e 's|${sysconfdir}|%{_sysconfdir}|g' \
+  -e 's|${logdir}|%{nginx_logdir}|g' \
+  -e 's|${pkg_name}|nginx|g' \
+  %{buildroot}%{_unitdir}/nginx.service \
+  %{buildroot}%{_sysconfdir}/sysconfig/nginx \
+  %{buildroot}%{_sysconfdir}/logrotate.d/nginx \
+  %{buildroot}%{nginx_confdir}/nginx.conf
 
-%{__install} -p -D -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
+%{__sed} -i \
+  -e 's|${client_tempdir}|%{nginx_client_tempdir}|g' \
+  %{buildroot}%{nginx_confdir}/conf.d/http/client.conf
 
 # Add add_module configs
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_confdir}/conf.modules.d
@@ -572,11 +606,11 @@ popd
 case $1 in
   1)
   : install
-  getent group %{nginx_group} \
+  getent group %{nginx_group} >/dev/null 2>&1 \
     || groupadd -r -g %{nginx_gid} %{nginx_group} \
     || groupadd -r %{nginx_group}
 
-  getent passwd %{nginx_user} \
+  getent passwd %{nginx_user} >/dev/null 2>&1 \
     || useradd -r -g %{nginx_group} -u %{nginx_uid} %{nginx_user} \
     || useradd -r -g %{nginx_group} %{nginx_user}
   ;;
@@ -586,7 +620,7 @@ case $1 in
 esac
 
 %post
-%systemd_post %{name}.service
+%systemd_post nginx.service
 case $1 in
   1)
   : install
@@ -597,7 +631,7 @@ case $1 in
 esac
 
 %preun
-%systemd_pre %{name}.service
+%systemd_pre nginx.service
 case $1 in
   0)
   : uninstall
@@ -608,15 +642,15 @@ case $1 in
 esac
 
 %postun
-%systemd_postun %{name}.service
+%systemd_postun nginx.service
 case $1 in
   0)
   : uninstall
-  getent passwd %{nginx_user} \
+  getent passwd %{nginx_user} >/dev/null 2>&1 \
     && userdel %{nginx_user} ||:
 
-  getent group %{nginx_group} \
-    && groupdell %{nginx_group} ||:
+  getent group %{nginx_group} >/dev/null 2>&1 \
+    && groupdel %{nginx_group} ||:
   ;;
   1)
   : update
@@ -632,9 +666,11 @@ esac
 %config(noreplace) %{nginx_confdir}/fastcgi_params
 %config(noreplace) %{nginx_confdir}/scgi_params
 %config(noreplace) %{nginx_confdir}/uwsgi_params
-%config(noreplace) %{nginx_confdir}/koi-utf
-%config(noreplace) %{nginx_confdir}/koi-win
-%config(noreplace) %{nginx_confdir}/win-utf
+%config(noreplace) %{nginx_confdir}/conf.d/http.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/client.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/gzip.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/log_format.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/proxy.conf
 
 %{_mandir}/man3/nginx.3pm.gz
 
@@ -643,8 +679,9 @@ esac
 %{nginx_webroot}/50x.html
 %{nginx_webroot}/index.html
 
-%{_unitdir}/%{name}.service
-%{_sysconfdir}/sysconfig/%{name}
+%config(noreplace) %{_unitdir}/nginx.service
+%config(noreplace) %{_sysconfdir}/sysconfig/nginx
+%config(noreplace) %{_sysconfdir}/logrotate.d/nginx
 
 %dir %{nginx_rundir}
 %dir %{nginx_lockdir}
