@@ -24,11 +24,11 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.0
-%global         main_release        1%{?dist}
+%global         main_version        1.15.1
+%global         main_release        2%{?dist}
 
 %global         ssl_name            libressl
-%global         ssl_version         2.7.3
+%global         ssl_version         2.7.4
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 
@@ -58,12 +58,12 @@
 %global         mod_echo_url             https://github.com/openresty/%{mod_echo_name}/archive/v%{mod_echo_version}.tar.gz#/%{mod_echo_pkgname}.tar.gz
 
 %global         mod_set_misc_name        set-misc-nginx-module
-%global         mod_set_misc_version     0.31
+%global         mod_set_misc_version     0.32
 %global         mod_set_misc_pkgname     %{mod_set_misc_name}-%{mod_set_misc_version}
 %global         mod_set_misc_url         https://github.com/openresty/%{mod_set_misc_name}/archive/v%{mod_set_misc_version}.tar.gz#/%{mod_set_misc_pkgname}.tar.gz
 
 %global         mod_memc_name            memc-nginx-module
-%global         mod_memc_version         0.18
+%global         mod_memc_version         0.19
 %global         mod_memc_pkgname         %{mod_memc_name}-%{mod_memc_version}
 %global         mod_memc_url             https://github.com/openresty/%{mod_memc_name}/archive/v%{mod_memc_version}.tar.gz#/%{mod_memc_pkgname}.tar.gz
 
@@ -73,7 +73,7 @@
 %global         mod_srcache_url          https://github.com/openresty/%{mod_srcache_name}/archive/v%{mod_srcache_version}.tar.gz#/%{mod_srcache_pkgname}.tar.gz
 
 %global         mod_redis2_name          redis2-nginx-module
-%global         mod_redis2_version       0.14
+%global         mod_redis2_version       0.15
 %global         mod_redis2_pkgname       %{mod_redis2_name}-%{mod_redis2_version}
 %global         mod_redis2_url           https://github.com/openresty/%{mod_redis2_name}/archive/v%{mod_redis2_version}.tar.gz#/%{mod_redis2_pkgname}.tar.gz
 
@@ -83,9 +83,19 @@
 %global         mod_drizzle_url          https://github.com/openresty/%{mod_drizzle_name}/archive/v%{mod_drizzle_version}.tar.gz#/%{mod_drizzle_pkgname}.tar.gz
 
 %global         mod_vts_name             nginx-module-vts
-%global         mod_vts_version          0.1.16
+%global         mod_vts_version          0.1.18
 %global         mod_vts_pkgname          %{mod_vts_name}-%{mod_vts_version}
 %global         mod_vts_url              https://github.com/vozlt/%{mod_vts_name}/archive/v%{mod_vts_version}.tar.gz#/%{mod_vts_pkgname}.tar.gz
+
+%global         mod_sts_name             nginx-module-sts
+%global         mod_sts_version          0.1.1
+%global         mod_sts_pkgname          %{mod_sts_name}-%{mod_sts_version}
+%global         mod_sts_url              https://github.com/vozlt/%{mod_sts_name}/archive/v%{mod_sts_version}.tar.gz#/%{mod_sts_pkgname}.tar.gz
+
+%global         mod_stream_sts_name      nginx-module-stream-sts
+%global         mod_stream_sts_version   0.1.1
+%global         mod_stream_sts_pkgname   %{mod_stream_sts_name}-%{mod_stream_sts_version}
+%global         mod_stream_sts_url       https://github.com/vozlt/%{mod_stream_sts_name}/archive/v%{mod_stream_sts_version}.tar.gz#/%{mod_stream_sts_pkgname}.tar.gz
 
 %global         mod_naxsi_name           naxsi
 %global         mod_naxsi_version        0.55.3
@@ -104,19 +114,24 @@
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
 %global         mod_njs_name             njs
-%global         mod_njs_version          0.2.0
+%global         mod_njs_version          0.2.2
 %global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
 %global         mod_brotli_name          ngx_brotli
-%global         mod_brotli_version       6a1174446f5a866d3d13615dd2824177570f0a69
+%global         mod_brotli_version       0.1.2
 %global         mod_brotli_pkgname       %{mod_brotli_name}-%{mod_brotli_version}
-%global         mod_brotli_url           https://github.com/eustas/%{mod_brotli_name}/archive/%{mod_brotli_version}.tar.gz#/%{mod_brotli_pkgname}.tar.gz
+%global         mod_brotli_url           https://github.com/eustas/%{mod_brotli_name}/archive/v%{mod_brotli_version}.tar.gz#/%{mod_brotli_pkgname}.tar.gz
 
 %global         brotli_name              brotli
-%global         brotli_version           1.0.2
+%global         brotli_version           1.0.4
 %global         brotli_pkgname           %{brotli_name}-%{brotli_version}
 %global         brotli_url               https://github.com/google/%{brotli_name}/archive/v%{brotli_version}.tar.gz#/%{brotli_pkgname}.tar.gz
+
+%global         mod_security_name        ModSecurity-nginx
+%global         mod_security_version     1.0.0
+%global         mod_security_pkgname     %{mod_security_name}-%{mod_security_version}
+%global         mod_security_url         https://github.com/SpiderLabs/%{mod_security_name}/archive/v%{mod_security_version}.tar.gz#/%{mod_security_pkgname}.tar.gz
 
 
 Name:           %{pkg_name}
@@ -131,6 +146,14 @@ Source0:        https://nginx.org/download/nginx-%{main_version}.tar.gz
 Source1:        https://nginx.org/download/nginx-%{main_version}.tar.gz.asc
 Source10:       nginx.service
 Source11:       nginx.sysconf
+Source12:       nginx.logrotate
+Source13:       nginx.conf
+Source14:       nginx-http.conf
+Source15:       nginx-http-log_format.conf
+Source16:       nginx-http-client.conf
+Source17:       nginx-http-proxy.conf
+Source18:       nginx-http-gzip.conf
+
 Source100:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
 Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
 
@@ -144,7 +167,7 @@ Source206:      %{mod_memc_url}
 Source207:      %{mod_srcache_url}
 Source208:      %{mod_redis2_url}
 Source209:      %{mod_vts_url}
-
+Source210:      %{mod_security_url}
 Source211:      %{mod_naxsi_url}
 Source212:      %{mod_pagespeed_url}
 Source213:      %{psol_url}
@@ -152,6 +175,9 @@ Source214:      %{mod_cache_purge_url}
 Source215:      %{mod_njs_url}
 Source216:      %{mod_brotli_url}
 Source217:      %{brotli_url}
+
+Source218:      %{mod_sts_url}
+Source219:      %{mod_stream_sts_url}
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -338,6 +364,16 @@ Requires:       %{name} = %{version}-%{main_release}
 %{summary}.
 
 
+%package mod-sts
+Summary:        nginx stream server traffic status module
+Release:        %{mod_sts_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+Requires:       %{name}-mod-stream = %{version}-%{main_release}
+
+%description mod-sts
+%{summary}.
+
+
 %package mod-pagespeed
 Summary:        nginx pagespeed module
 Release:        %{mod_pagespeed_version}.%{main_release}
@@ -375,6 +411,17 @@ Requires:       %{name} = %{version}-%{main_release}
 %{summary}.
 
 
+%package mod-security
+Summary:        nginx ModSecurity module
+Release:        %{mod_security_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+Requires:       libmodsecurity
+BuildRequires:  libmodsecurity-devel
+
+%description mod-security
+%{summary}.
+
+
 %prep
 %setup -q -n %{nginx_source_name} -a 100
 %__tar xf %{SOURCE200}
@@ -387,9 +434,12 @@ Requires:       %{name} = %{version}-%{main_release}
 %__tar xf %{SOURCE207}
 %__tar xf %{SOURCE208}
 %__tar xf %{SOURCE209}
+%__tar xf %{SOURCE210}
 %__tar xf %{SOURCE211}
 %__tar xf %{SOURCE214}
 %__tar xf %{SOURCE215}
+%__tar xf %{SOURCE218}
+%__tar xf %{SOURCE219}
 
 # Pagespeed
 %__mkdir %{mod_pagespeed_pkgname}
@@ -476,11 +526,14 @@ export LUAJIT_INC=$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')
   --add-dynamic-module=%{mod_srcache_pkgname} \
   --add-dynamic-module=%{mod_redis2_pkgname} \
   --add-dynamic-module=%{mod_vts_pkgname} \
+  --add-dynamic-module=%{mod_security_pkgname} \
   --add-dynamic-module=%{mod_naxsi_pkgname}/naxsi_src \
   --add-dynamic-module=%{mod_pagespeed_pkgname} \
   --add-dynamic-module=%{mod_cache_purge_pkgname} \
   --add-dynamic-module=%{mod_njs_pkgname}/nginx \
   --add-dynamic-module=%{mod_brotli_pkgname} \
+  --add-dynamic-module=%{mod_sts_pkgname} \
+  --add-dynamic-module=%{mod_stream_sts_pkgname} \
 
 %make_build
 
@@ -515,14 +568,40 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_scgi_cachedir}
 
 # Add systemd service unit file
-%{__install} -p -D -m 0644 %{SOURCE10} %{buildroot}%{_unitdir}/%{name}.service
+%{__install} -p -D -m 0644 %{SOURCE10} %{buildroot}%{_unitdir}/nginx.service
+
+# sysconfig
+%{__install} -p -D -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/sysconfig/nginx
+
+# logrotate
+%{__install} -p -D -m 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/logrotate.d/nginx
+
+# nginx config
+unlink %{buildroot}%{nginx_confdir}/koi-utf
+unlink %{buildroot}%{nginx_confdir}/koi-win
+unlink %{buildroot}%{nginx_confdir}/win-utf
+%{__install} -p -D -m 0644 %{SOURCE13} %{buildroot}%{nginx_confdir}/nginx.conf
+%{__install} -p -D -m 0644 %{SOURCE14} %{buildroot}%{nginx_confdir}/conf.d/http.conf
+%{__install} -p -D -m 0644 %{SOURCE15} %{buildroot}%{nginx_confdir}/conf.d/http/log_format.conf
+%{__install} -p -D -m 0644 %{SOURCE16} %{buildroot}%{nginx_confdir}/conf.d/http/client.conf
+%{__install} -p -D -m 0644 %{SOURCE17} %{buildroot}%{nginx_confdir}/conf.d/http/proxy.conf
+%{__install} -p -D -m 0644 %{SOURCE18} %{buildroot}%{nginx_confdir}/conf.d/http/gzip.conf
+
+# nginx reset paths
 %{__sed} -i \
   -e 's|${rundir}|%{_rundir}|g' \
   -e 's|${sbindir}|%{_sbindir}|g' \
-  -e 's|${pkg_name}|%{name}|g' \
-  %{buildroot}%{_unitdir}/%{name}.service
+  -e 's|${sysconfdir}|%{_sysconfdir}|g' \
+  -e 's|${logdir}|%{nginx_logdir}|g' \
+  -e 's|${pkg_name}|nginx|g' \
+  %{buildroot}%{_unitdir}/nginx.service \
+  %{buildroot}%{_sysconfdir}/sysconfig/nginx \
+  %{buildroot}%{_sysconfdir}/logrotate.d/nginx \
+  %{buildroot}%{nginx_confdir}/nginx.conf
 
-%{__install} -p -D -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
+%{__sed} -i \
+  -e 's|${client_tempdir}|%{nginx_client_tempdir}|g' \
+  %{buildroot}%{nginx_confdir}/conf.d/http/client.conf
 
 # Add add_module configs
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_confdir}/conf.modules.d
@@ -572,11 +651,11 @@ popd
 case $1 in
   1)
   : install
-  getent group %{nginx_group} \
+  getent group %{nginx_group} >/dev/null 2>&1 \
     || groupadd -r -g %{nginx_gid} %{nginx_group} \
     || groupadd -r %{nginx_group}
 
-  getent passwd %{nginx_user} \
+  getent passwd %{nginx_user} >/dev/null 2>&1 \
     || useradd -r -g %{nginx_group} -u %{nginx_uid} %{nginx_user} \
     || useradd -r -g %{nginx_group} %{nginx_user}
   ;;
@@ -586,7 +665,7 @@ case $1 in
 esac
 
 %post
-%systemd_post %{name}.service
+%systemd_post nginx.service
 case $1 in
   1)
   : install
@@ -597,7 +676,7 @@ case $1 in
 esac
 
 %preun
-%systemd_pre %{name}.service
+%systemd_pre nginx.service
 case $1 in
   0)
   : uninstall
@@ -608,15 +687,15 @@ case $1 in
 esac
 
 %postun
-%systemd_postun %{name}.service
+%systemd_postun nginx.service
 case $1 in
   0)
   : uninstall
-  getent passwd %{nginx_user} \
+  getent passwd %{nginx_user} >/dev/null 2>&1 \
     && userdel %{nginx_user} ||:
 
-  getent group %{nginx_group} \
-    && groupdell %{nginx_group} ||:
+  getent group %{nginx_group} >/dev/null 2>&1 \
+    && groupdel %{nginx_group} ||:
   ;;
   1)
   : update
@@ -632,9 +711,11 @@ esac
 %config(noreplace) %{nginx_confdir}/fastcgi_params
 %config(noreplace) %{nginx_confdir}/scgi_params
 %config(noreplace) %{nginx_confdir}/uwsgi_params
-%config(noreplace) %{nginx_confdir}/koi-utf
-%config(noreplace) %{nginx_confdir}/koi-win
-%config(noreplace) %{nginx_confdir}/win-utf
+%config(noreplace) %{nginx_confdir}/conf.d/http.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/client.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/gzip.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/log_format.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/proxy.conf
 
 %{_mandir}/man3/nginx.3pm.gz
 
@@ -643,8 +724,9 @@ esac
 %{nginx_webroot}/50x.html
 %{nginx_webroot}/index.html
 
-%{_unitdir}/%{name}.service
-%{_sysconfdir}/sysconfig/%{name}
+%config(noreplace) %{_unitdir}/nginx.service
+%config(noreplace) %{_sysconfdir}/sysconfig/nginx
+%config(noreplace) %{_sysconfdir}/logrotate.d/nginx
 
 %dir %{nginx_rundir}
 %dir %{nginx_lockdir}
@@ -758,8 +840,23 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_brotli_filter_module.conf
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_brotli_static_module.conf
 
+%files mod-sts
+%{nginx_moddir}/ngx_http_stream_server_traffic_status_module.so
+%{nginx_moddir}/ngx_stream_server_traffic_status_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_stream_server_traffic_status_module.conf
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_stream_server_traffic_status_module.conf
+
+%files mod-security
+%{nginx_moddir}/ngx_http_modsecurity_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_modsecurity_module.conf
+
 
 %changelog
+* Mon Jul 09 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.1-2
+- Add ModSecurity module.
+* Mon Jul 09 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.1-1
+- Bumpup 1.15.1
+- Add stream server traffic status module.
 * Wed Apr 04 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-8
 - Add fedora support.
 - Add cache purge module.
