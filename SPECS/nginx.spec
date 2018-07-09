@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.15.1
-%global         main_release        1%{?dist}
+%global         main_release        2%{?dist}
 
 %global         ssl_name            libressl
 %global         ssl_version         2.7.4
@@ -128,6 +128,11 @@
 %global         brotli_pkgname           %{brotli_name}-%{brotli_version}
 %global         brotli_url               https://github.com/google/%{brotli_name}/archive/v%{brotli_version}.tar.gz#/%{brotli_pkgname}.tar.gz
 
+%global         mod_security_name        ModSecurity-nginx
+%global         mod_security_version     1.0.0
+%global         mod_security_pkgname     %{mod_security_name}-%{mod_security_version}
+%global         mod_security_url         https://github.com/SpiderLabs/%{mod_security_name}/archive/v%{mod_security_version}.tar.gz#/%{mod_security_pkgname}.tar.gz
+
 
 Name:           %{pkg_name}
 Version:        %{main_version}
@@ -162,7 +167,7 @@ Source206:      %{mod_memc_url}
 Source207:      %{mod_srcache_url}
 Source208:      %{mod_redis2_url}
 Source209:      %{mod_vts_url}
-
+Source210:      %{mod_security_url}
 Source211:      %{mod_naxsi_url}
 Source212:      %{mod_pagespeed_url}
 Source213:      %{psol_url}
@@ -406,6 +411,17 @@ Requires:       %{name} = %{version}-%{main_release}
 %{summary}.
 
 
+%package mod-security
+Summary:        nginx ModSecurity module
+Release:        %{mod_security_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+Requires:       libmodsecurity
+BuildRequires:  libmodsecurity-devel
+
+%description mod-security
+%{summary}.
+
+
 %prep
 %setup -q -n %{nginx_source_name} -a 100
 %__tar xf %{SOURCE200}
@@ -418,6 +434,7 @@ Requires:       %{name} = %{version}-%{main_release}
 %__tar xf %{SOURCE207}
 %__tar xf %{SOURCE208}
 %__tar xf %{SOURCE209}
+%__tar xf %{SOURCE210}
 %__tar xf %{SOURCE211}
 %__tar xf %{SOURCE214}
 %__tar xf %{SOURCE215}
@@ -509,6 +526,7 @@ export LUAJIT_INC=$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')
   --add-dynamic-module=%{mod_srcache_pkgname} \
   --add-dynamic-module=%{mod_redis2_pkgname} \
   --add-dynamic-module=%{mod_vts_pkgname} \
+  --add-dynamic-module=%{mod_security_pkgname} \
   --add-dynamic-module=%{mod_naxsi_pkgname}/naxsi_src \
   --add-dynamic-module=%{mod_pagespeed_pkgname} \
   --add-dynamic-module=%{mod_cache_purge_pkgname} \
@@ -828,8 +846,14 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_stream_server_traffic_status_module.conf
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_stream_server_traffic_status_module.conf
 
+%files mod-security
+%{nginx_moddir}/ngx_http_modsecurity_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_modsecurity_module.conf
+
 
 %changelog
+* Mon Jul 09 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.1-2
+- Add ModSecurity module.
 * Mon Jul 09 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.1-1
 - Bumpup 1.15.1
 - Add stream server traffic status module.
