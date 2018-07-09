@@ -6,8 +6,8 @@ nginx mainline custom build (with libressl and jemalloc)
 
 ## spec
 
-- nginx 1.15.0 [link](https://nginx.org/en/)
-- libressl 2.7.3 [link](https://www.libressl.org/)
+- nginx 1.15.1 [link](https://nginx.org/en/)
+- libressl 2.7.4 [link](https://www.libressl.org/)
 - jemalloc 3.6.0 [link](https://github.com/jemalloc/jemalloc)
 
 ## modules
@@ -21,7 +21,7 @@ Main modules
 - mod-mail
 - mod-stream
 - mod-stream-geoip
-- mod-njs 0.2.0 [link](https://hg.nginx.org/njs)
+- mod-njs 0.2.2 [link](https://hg.nginx.org/njs)
 
 Additional modules
 
@@ -36,10 +36,15 @@ Additional modules
 - mod-set-misc 0.31 [link](https://github.com/openresty/set-misc-nginx-module)
 - mod-srcache 0.31 [link](https://github.com/openresty/srcache-nginx-module)
 - mod-vts 0.1.16 [link](https://github.com/vozlt/nginx-module-vts)
+- mod-sts 0.1.1 [link](https://github.com/vozlt/nginx-module-sts)
+- mod-stream-sts 0.1.1 [link](https://github.com/vozlt/nginx-module-stream-sts)
 - mod-pagespeed 1.13.35.2 [link](https://developers.google.com/speed/pagespeed/module/)
+- mod-security 1.0.0 [link](https://github.com/SpiderLabs/ModSecurity-nginx)
 
 
 # Changelog
+- 2018-07-08 add mod-sts 0.1.1, mod-stream-sts 0.1.1, mod-security 1.0.0
+- 2018-07-08 bumped version nginx 1.15.1, libressl 2.7.4
 - 2018-06-07 bumped version nginx 1.15.0, libressl 2.7.3, mod-http-lua 0.10.13 and mod-vts 0.1.16
 - 2018-04-08 bumped version nginx 1.13.11, libressl 2.7.2 and njs 0.2.0
 - 2018-04-04 add modules link and copr status budge
