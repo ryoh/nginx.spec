@@ -24,7 +24,7 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.0
+%global         main_version        1.15.1
 %global         main_release        1%{?dist}
 
 %global         ssl_name            libressl
@@ -86,6 +86,16 @@
 %global         mod_vts_version          0.1.18
 %global         mod_vts_pkgname          %{mod_vts_name}-%{mod_vts_version}
 %global         mod_vts_url              https://github.com/vozlt/%{mod_vts_name}/archive/v%{mod_vts_version}.tar.gz#/%{mod_vts_pkgname}.tar.gz
+
+%global         mod_sts_name             nginx-module-sts
+%global         mod_sts_version          0.1.1
+%global         mod_sts_pkgname          %{mod_sts_name}-%{mod_sts_version}
+%global         mod_sts_url              https://github.com/vozlt/%{mod_sts_name}/archive/v%{mod_sts_version}.tar.gz#/%{mod_sts_pkgname}.tar.gz
+
+%global         mod_stream_sts_name      nginx-module-stream-sts
+%global         mod_stream_sts_version   0.1.1
+%global         mod_stream_sts_pkgname   %{mod_stream_sts_name}-%{mod_stream_sts_version}
+%global         mod_stream_sts_url       https://github.com/vozlt/%{mod_stream_sts_name}/archive/v%{mod_stream_sts_version}.tar.gz#/%{mod_stream_sts_pkgname}.tar.gz
 
 %global         mod_naxsi_name           naxsi
 %global         mod_naxsi_version        0.55.3
@@ -160,6 +170,9 @@ Source214:      %{mod_cache_purge_url}
 Source215:      %{mod_njs_url}
 Source216:      %{mod_brotli_url}
 Source217:      %{brotli_url}
+
+Source218:      %{mod_sts_url}
+Source219:      %{mod_stream_sts_url}
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -346,6 +359,16 @@ Requires:       %{name} = %{version}-%{main_release}
 %{summary}.
 
 
+%package mod-sts
+Summary:        nginx stream server traffic status module
+Release:        %{mod_sts_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+Requires:       %{name}-mod-stream = %{version}-%{main_release}
+
+%description mod-sts
+%{summary}.
+
+
 %package mod-pagespeed
 Summary:        nginx pagespeed module
 Release:        %{mod_pagespeed_version}.%{main_release}
@@ -398,6 +421,8 @@ Requires:       %{name} = %{version}-%{main_release}
 %__tar xf %{SOURCE211}
 %__tar xf %{SOURCE214}
 %__tar xf %{SOURCE215}
+%__tar xf %{SOURCE218}
+%__tar xf %{SOURCE219}
 
 # Pagespeed
 %__mkdir %{mod_pagespeed_pkgname}
@@ -489,6 +514,8 @@ export LUAJIT_INC=$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')
   --add-dynamic-module=%{mod_cache_purge_pkgname} \
   --add-dynamic-module=%{mod_njs_pkgname}/nginx \
   --add-dynamic-module=%{mod_brotli_pkgname} \
+  --add-dynamic-module=%{mod_sts_pkgname} \
+  --add-dynamic-module=%{mod_stream_sts_pkgname} \
 
 %make_build
 
@@ -795,8 +822,17 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_brotli_filter_module.conf
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_brotli_static_module.conf
 
+%files mod-sts
+%{nginx_moddir}/ngx_http_stream_server_traffic_status_module.so
+%{nginx_moddir}/ngx_stream_server_traffic_status_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_stream_server_traffic_status_module.conf
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_stream_server_traffic_status_module.conf
+
 
 %changelog
+* Mon Jul 09 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.1-1
+- Bumpup 1.15.1
+- Add stream server traffic status module.
 * Wed Apr 04 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.13.10-8
 - Add fedora support.
 - Add cache purge module.
