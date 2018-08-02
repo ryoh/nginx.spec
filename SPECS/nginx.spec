@@ -9,23 +9,23 @@
 %global         nginx_tempdir       %{_var}/cache/nginx
 %global         nginx_logdir        %{_localstatedir}/log/nginx
 %global         nginx_rundir        %{_rundir}
-%global         nginx_lockdir       %{_localstatedir}/lock/subsys/nginx
+%global         nginx_lockdir       %{_rundir}/lock/subsys/nginx
 %global         nginx_home          %{_datadir}/nginx
 %global         nginx_webroot       %{nginx_home}/html
 %global         nginx_client_tempdir   %{nginx_tempdir}/client_body_temp
 %global         nginx_proxy_tempdir    %{nginx_tempdir}/proxy_temp
 %global         nginx_fastcgi_tempdir  %{nginx_tempdir}/fastcgi_temp
-%global         nginx_uwscgi_tempdir   %{nginx_tempdir}/uwscgi_temp
+%global         nginx_uwsgi_tempdir    %{nginx_tempdir}/uwsgi_temp
 %global         nginx_scgi_tempdir     %{nginx_tempdir}/scgi_temp
 %global         nginx_proxy_cachedir   %{nginx_tempdir}/proxy_cache
 %global         nginx_fastcgi_cachedir %{nginx_tempdir}/fastcgi_cache
-%global         nginx_uwscgi_cachedir  %{nginx_tempdir}/uwscgi_cache
+%global         nginx_uwsgi_cachedir   %{nginx_tempdir}/uwsgi_cache
 %global         nginx_scgi_cachedir    %{nginx_tempdir}/scgi_cache
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.1
-%global         main_release        2%{?dist}
+%global         main_version        1.15.2
+%global         main_release        1%{?dist}
 
 %global         ssl_name            libressl
 %global         ssl_version         2.7.4
@@ -456,11 +456,11 @@ popd
 
 
 %build
-CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS} $(pcre-config --cflags) -DNGX_LUA_ABORT_AT_PANIC}"; export CFLAGS;
+CFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags)}"; export CFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 
-export LUAJIT_LIB=/usr/lib64
-export LUAJIT_INC=$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')
+export LUAJIT_LIB="/usr/lib64"
+export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
 
 ./configure \
   --with-cc-opt="${CFLAGS}" \
@@ -477,13 +477,11 @@ export LUAJIT_INC=$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')
   --http-client-body-temp-path=%{nginx_client_tempdir} \
   --http-proxy-temp-path=%{nginx_proxy_tempdir} \
   --http-fastcgi-temp-path=%{nginx_fastcgi_tempdir} \
-  --http-uwsgi-temp-path=%{nginx_uwscgi_tempdir} \
+  --http-uwsgi-temp-path=%{nginx_uwsgi_tempdir} \
   --http-scgi-temp-path=%{nginx_scgi_tempdir} \
   --user=%{nginx_user} \
   --group=%{nginx_group} \
   --build=%{name}-%{version}-%{release} \
-  --with-select_module \
-  --with-poll_module \
   --with-threads \
   --with-file-aio \
   --with-compat \
@@ -560,11 +558,11 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_client_tempdir}
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_proxy_tempdir}
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_fastcgi_tempdir}
-%{__install} -p -d -m 0755 %{buildroot}%{nginx_uwscgi_tempdir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_uwsgi_tempdir}
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_scgi_tempdir}
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_proxy_cachedir}
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_fastcgi_cachedir}
-%{__install} -p -d -m 0755 %{buildroot}%{nginx_uwscgi_cachedir}
+%{__install} -p -d -m 0755 %{buildroot}%{nginx_uwsgi_cachedir}
 %{__install} -p -d -m 0755 %{buildroot}%{nginx_scgi_cachedir}
 
 # Add systemd service unit file
@@ -622,7 +620,7 @@ done
 pushd %{buildroot}%{_usrsrc}
 
 pushd ./%{nginx_source_name}/%{ssl_pkgname}
-%{__make} clean
+%{__make} clean ||:
 popd
 
 pushd ./%{nginx_source_name}
@@ -737,11 +735,11 @@ esac
 %dir %{nginx_client_tempdir}
 %dir %{nginx_proxy_tempdir}
 %dir %{nginx_fastcgi_tempdir}
-%dir %{nginx_uwscgi_tempdir}
+%dir %{nginx_uwsgi_tempdir}
 %dir %{nginx_scgi_tempdir}
 %dir %{nginx_proxy_cachedir}
 %dir %{nginx_fastcgi_cachedir}
-%dir %{nginx_uwscgi_cachedir}
+%dir %{nginx_uwsgi_cachedir}
 %dir %{nginx_scgi_cachedir}
 
 %files source
