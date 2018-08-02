@@ -850,6 +850,14 @@ esac
 
 
 %changelog
+* Fri Aug 03 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.2-1
+- Bump up version nginx 1.15.1 -> 1.15.2
+- Fix typo. uwscgi -> uwsgi
+- Change lock file parent path. %{_localstatedir} -> %{_rundir}
+- Delete CFLAGS option "-DNGX_LUA_ABORT_AT_PANIC"
+- Disable configure option "--with-select_module", "--with-pool_module"
+- Enable create debuginfo package. (For binary strip)
+- And some fix
 * Mon Jul 09 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.1-2
 - Add ModSecurity module.
 * Mon Jul 09 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.1-1
