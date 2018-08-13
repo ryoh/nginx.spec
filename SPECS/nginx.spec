@@ -850,7 +850,7 @@ esac
 
 
 %changelog
-* Thu Aug 04 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.2-2
+* Sat Aug 04 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.2-2
 - Bump up verions njs 0.2.3
 * Fri Aug 03 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.2-1
 - Bump up version nginx 1.15.1 -> 1.15.2
