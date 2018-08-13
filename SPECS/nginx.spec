@@ -1,4 +1,4 @@
-%global         _hardened_build     1
+#%%global         _hardened_build     1
 
 %global         nginx_user          nginx
 %global         nginx_group         nginx
@@ -27,10 +27,10 @@
 %global         main_version        1.15.2
 %global         main_release        2%{?dist}
 
-%global         ssl_name            libressl
-%global         ssl_version         2.7.4
+%global         ssl_name            boringssl
+%global         ssl_version         1c337e566d98a46798fe76c170c35e8c1a3ca6ea
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
-%global         ssl_url             https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
+%global         ssl_url             https://github.com/google/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
 
 %global         mod_ndk_name        ngx_devel_kit
 %global         mod_ndk_version     0.3.0
@@ -154,8 +154,8 @@ Source16:       nginx-http-client.conf
 Source17:       nginx-http-proxy.conf
 Source18:       nginx-http-gzip.conf
 
-Source100:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz
-Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
+Source100:      %{ssl_url}
+#Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
 
 Source200:      %{mod_ndk_url}
 Source201:      %{mod_lua_url}
@@ -454,10 +454,27 @@ pushd %{mod_brotli_pkgname}/deps
 %__tar xf %{SOURCE217} -C brotli --strip-components 1
 popd
 
+# BoringSSL
+%__mkdir -p %{ssl_pkgname}/build %{ssl_pkgname}/.openssl/lib
+%__tar xf %{SOURCE100} -C %{ssl_pkgname} --strip-components 1
+pushd %{ssl_pkgname}/.openssl
+%__ln_s ../include .
+popd
+
 
 %build
 CFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags)}"; export CFLAGS;
+CXXFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags)}"; export CXXFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
+
+# BoringSSL
+pushd %{ssl_pkgname}
+  pushd build
+    cmake -DCMAKE_BUILD_TYPE=Release -DOPENSSL_SMALL=1 -GNinja ..
+    ninja-build
+  popd
+  install -p build/crypto/libcrypto.a build/ssl/libssl.a .openssl/lib/
+popd
 
 export LUAJIT_LIB="/usr/lib64"
 export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
@@ -532,6 +549,8 @@ export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
   --add-dynamic-module=%{mod_brotli_pkgname} \
   --add-dynamic-module=%{mod_sts_pkgname} \
   --add-dynamic-module=%{mod_stream_sts_pkgname} \
+
+touch %{ssl_pkgname}/.openssl/include/openssl/ssl.h
 
 %make_build
 
