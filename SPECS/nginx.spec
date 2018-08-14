@@ -25,10 +25,10 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.15.2
-%global         main_release        2%{?dist}
+%global         main_release        3%{?dist}
 
 %global         ssl_name            boringssl
-%global         ssl_version         1c337e566d98a46798fe76c170c35e8c1a3ca6ea
+%global         ssl_version         d451453067cd665a5c38830fbbaac9e599234a5e
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://github.com/google/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
 
@@ -153,6 +153,8 @@ Source15:       nginx-http-log_format.conf
 Source16:       nginx-http-client.conf
 Source17:       nginx-http-proxy.conf
 Source18:       nginx-http-gzip.conf
+Source19:       nginx-http-ssl.conf
+Source50:       00-default.conf
 
 Source100:      %{ssl_url}
 #Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
@@ -178,6 +180,9 @@ Source217:      %{brotli_url}
 
 Source218:      %{mod_sts_url}
 Source219:      %{mod_stream_sts_url}
+
+Patch0:         nginx-1.15.2-enable_tls13.patch
+Patch1:         nginx-1.15.2-add_0-rtt.patch
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -423,7 +428,10 @@ BuildRequires:  libmodsecurity-devel
 
 
 %prep
-%setup -q -n %{nginx_source_name} -a 100
+%setup -q -n %{nginx_source_name}
+%patch0 -p1 -b.enable_tls13
+%patch1 -p1 -b.add_0-rtt
+
 %__tar xf %{SOURCE200}
 %__tar xf %{SOURCE201}
 %__tar xf %{SOURCE202}
@@ -455,20 +463,19 @@ pushd %{mod_brotli_pkgname}/deps
 popd
 
 # BoringSSL
-%__mkdir -p %{ssl_pkgname}/build %{ssl_pkgname}/.openssl/lib
-%__tar xf %{SOURCE100} -C %{ssl_pkgname} --strip-components 1
-pushd %{ssl_pkgname}/.openssl
+%__mkdir -p %{ssl_name}/build %{ssl_name}/.openssl/lib
+%__tar xf %{SOURCE100} -C %{ssl_name} --strip-components 1
+pushd %{ssl_name}/.openssl
 %__ln_s ../include .
 popd
 
 
 %build
 CFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags)}"; export CFLAGS;
-CXXFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags)}"; export CXXFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 
 # BoringSSL
-pushd %{ssl_pkgname}
+pushd %{ssl_name}
   pushd build
     cmake -DCMAKE_BUILD_TYPE=Release -DOPENSSL_SMALL=1 -GNinja ..
     ninja-build
@@ -480,9 +487,9 @@ export LUAJIT_LIB="/usr/lib64"
 export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
 
 ./configure \
-  --with-cc-opt="${CFLAGS}" \
-  --with-ld-opt="${LDFLAGS}" \
-  --with-openssl=./%{ssl_pkgname} \
+  --with-cc-opt="${CFLAGS}  -I./%{ssl_name}/.openssl/include" \
+  --with-ld-opt="${LDFLAGS} -L./%{ssl_name}/.openssl/lib" \
+  --with-openssl=./%{ssl_name} \
   --prefix=%{nginx_home} \
   --sbin-path=%{_sbindir}/nginx \
   --modules-path=%{nginx_moddir} \
@@ -550,7 +557,7 @@ export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
   --add-dynamic-module=%{mod_sts_pkgname} \
   --add-dynamic-module=%{mod_stream_sts_pkgname} \
 
-touch %{ssl_pkgname}/.openssl/include/openssl/ssl.h
+touch %{ssl_name}/.openssl/include/openssl/ssl.h
 
 %make_build
 
@@ -597,12 +604,15 @@ find %{buildroot} -type f -iname '*.so' -exec chmod 0755 '{}' \;
 unlink %{buildroot}%{nginx_confdir}/koi-utf
 unlink %{buildroot}%{nginx_confdir}/koi-win
 unlink %{buildroot}%{nginx_confdir}/win-utf
-%{__install} -p -D -m 0644 %{SOURCE13} %{buildroot}%{nginx_confdir}/nginx.conf
-%{__install} -p -D -m 0644 %{SOURCE14} %{buildroot}%{nginx_confdir}/conf.d/http.conf
-%{__install} -p -D -m 0644 %{SOURCE15} %{buildroot}%{nginx_confdir}/conf.d/http/log_format.conf
-%{__install} -p -D -m 0644 %{SOURCE16} %{buildroot}%{nginx_confdir}/conf.d/http/client.conf
-%{__install} -p -D -m 0644 %{SOURCE17} %{buildroot}%{nginx_confdir}/conf.d/http/proxy.conf
-%{__install} -p -D -m 0644 %{SOURCE18} %{buildroot}%{nginx_confdir}/conf.d/http/gzip.conf
+%{__install} -p -D -m 0640 %{SOURCE13} %{buildroot}%{nginx_confdir}/nginx.conf
+%{__install} -p -D -m 0640 %{SOURCE14} %{buildroot}%{nginx_confdir}/conf.d/http.conf
+%{__install} -p -D -m 0640 %{SOURCE15} %{buildroot}%{nginx_confdir}/conf.d/http/log_format.conf
+%{__install} -p -D -m 0640 %{SOURCE16} %{buildroot}%{nginx_confdir}/conf.d/http/client.conf
+%{__install} -p -D -m 0640 %{SOURCE17} %{buildroot}%{nginx_confdir}/conf.d/http/proxy.conf
+%{__install} -p -D -m 0640 %{SOURCE18} %{buildroot}%{nginx_confdir}/conf.d/http/gzip.conf
+%{__install} -p -D -m 0640 %{SOURCE19} %{buildroot}%{nginx_confdir}/conf.d/http/ssl.conf
+
+%{__install} -p -D -m 0640 %{SOURCE50} %{buildroot}%{nginx_confdir}/vhost.d/http/00-default.conf
 
 # nginx reset paths
 %{__sed} -i \
@@ -638,7 +648,7 @@ done
 
 pushd %{buildroot}%{_usrsrc}
 
-pushd ./%{nginx_source_name}/%{ssl_pkgname}
+pushd ./%{nginx_source_name}/%{ssl_name}
 %{__make} clean ||:
 popd
 
@@ -733,6 +743,8 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.d/http/gzip.conf
 %config(noreplace) %{nginx_confdir}/conf.d/http/log_format.conf
 %config(noreplace) %{nginx_confdir}/conf.d/http/proxy.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/ssl.conf
+%config(noreplace) %{nginx_confdir}/vhost.d/http/00-default.conf
 
 %{_mandir}/man3/nginx.3pm.gz
 
