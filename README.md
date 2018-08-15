@@ -7,7 +7,7 @@ nginx mainline custom build (with libressl and jemalloc)
 ## spec
 
 - nginx 1.15.2 [link](https://nginx.org/en/)
-- libressl 2.7.4 [link](https://www.libressl.org/)
+- boringssl [link](https://boringssl.googlesource.com/boringssl/)
 - jemalloc 3.6.0 [link](https://github.com/jemalloc/jemalloc)
 
 ## modules
@@ -43,6 +43,7 @@ Additional modules
 
 
 # Changelog
+- 2018-08-16 add support TLS1.3
 - 2018-08-03 bump up version nginx 1.15.2
 - 2018-07-08 add mod-sts 0.1.1, mod-stream-sts 0.1.1, mod-security 1.0.0
 - 2018-07-08 bumped version nginx 1.15.1, libressl 2.7.4
