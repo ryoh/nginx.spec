@@ -28,7 +28,7 @@
 %global         main_release        3%{?dist}
 
 %global         ssl_name            boringssl
-%global         ssl_version         d451453067cd665a5c38830fbbaac9e599234a5e
+%global         ssl_version         f1af129fb4ddb44bfd1c4aeaa5e07676c43faf28
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://github.com/google/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
 
@@ -195,6 +195,7 @@ BuildRequires:  make gcc automake autoconf libtool
 BuildRequires:  zlib-devel pcre-devel
 BuildRequires:  apr apr-util
 BuildRequires:  jemalloc-devel
+BuildRequires:  cmake ninja-build golang
 
 
 %description
@@ -490,6 +491,7 @@ export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
   --with-cc-opt="${CFLAGS}  -I./%{ssl_name}/.openssl/include" \
   --with-ld-opt="${LDFLAGS} -L./%{ssl_name}/.openssl/lib" \
   --with-openssl=./%{ssl_name} \
+  --with-openssl-opt=enable-tls1_3 \
   --prefix=%{nginx_home} \
   --sbin-path=%{_sbindir}/nginx \
   --modules-path=%{nginx_moddir} \
@@ -719,10 +721,10 @@ case $1 in
   0)
   : uninstall
   getent passwd %{nginx_user} >/dev/null 2>&1 \
-    && userdel %{nginx_user} ||:
+    && userdel %{nginx_user} >/dev/null 2>&1 ||:
 
   getent group %{nginx_group} >/dev/null 2>&1 \
-    && groupdel %{nginx_group} ||:
+    && groupdel %{nginx_group} >/dev/null 2>&1 ||:
   ;;
   1)
   : update
@@ -881,6 +883,11 @@ esac
 
 
 %changelog
+* Tue Aug 14 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.2-3
+- Add TLS1.3 support (use boringssl. and remove libressl)
+- Add support TLS1.3 Early Data
+- Add ssl.conf
+- Add default server config (00-default.conf)
 * Sat Aug 04 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.2-2
 - Bump up verions njs 0.2.3
 * Fri Aug 03 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.2-1
