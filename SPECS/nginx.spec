@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.15.2
-%global         main_release        3%{?dist}
+%global         main_release        4%{?dist}
 
 %global         ssl_name            boringssl
 %global         ssl_version         f1af129fb4ddb44bfd1c4aeaa5e07676c43faf28
