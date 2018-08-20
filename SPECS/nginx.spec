@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.15.2
-%global         main_release        4%{?dist}
+%global         main_release        5%{?dist}
 
 %global         ssl_name            boringssl
 %global         ssl_version         f1af129fb4ddb44bfd1c4aeaa5e07676c43faf28
@@ -500,7 +500,7 @@ export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
   --with-ld-opt="${LDFLAGS} -L./%{ssl_name}/.openssl/lib" \
   --with-openssl=./%{ssl_name} \
   --with-openssl-opt=enable-tls1_3 \
-  %{?with_http_v2_hpack_enc} \
+  %{?_with_http_v2_hpack_enc} \
   --prefix=%{nginx_home} \
   --sbin-path=%{_sbindir}/nginx \
   --modules-path=%{nginx_moddir} \
