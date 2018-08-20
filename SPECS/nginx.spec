@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.15.2
-%global         main_release        3%{?dist}
+%global         main_release        4%{?dist}
 
 %global         ssl_name            boringssl
 %global         ssl_version         f1af129fb4ddb44bfd1c4aeaa5e07676c43faf28
@@ -183,6 +183,7 @@ Source219:      %{mod_stream_sts_url}
 
 Patch0:         nginx-1.15.2-enable_tls13.patch
 Patch1:         nginx-1.15.2-add_0-rtt.patch
+Patch100:       https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -432,6 +433,7 @@ BuildRequires:  libmodsecurity-devel
 %setup -q -n %{nginx_source_name}
 %patch0 -p1 -b.enable_tls13
 %patch1 -p1 -b.add_0-rtt
+%patch100 -p1 -b.enable-ocsp
 
 %__tar xf %{SOURCE200}
 %__tar xf %{SOURCE201}
