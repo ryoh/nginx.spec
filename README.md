@@ -2,7 +2,7 @@
 
 # description
 
-nginx mainline custom build (with libressl and jemalloc)
+nginx mainline custom build (with boringssl and jemalloc)
 
 ## spec
 
@@ -43,6 +43,7 @@ Additional modules
 
 
 # Changelog
+- 2018-08-22 add OCSP patch. add cloudflare HPACK patch
 - 2018-08-16 add support TLS1.3
 - 2018-08-03 bump up version nginx 1.15.2
 - 2018-07-08 add mod-sts 0.1.1, mod-stream-sts 0.1.1, mod-security 1.0.0
