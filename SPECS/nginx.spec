@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.15.2
-%global         main_release        3%{?dist}
+%global         main_release        5%{?dist}
 
 %global         ssl_name            boringssl
 %global         ssl_version         f1af129fb4ddb44bfd1c4aeaa5e07676c43faf28
@@ -133,6 +133,8 @@
 %global         mod_security_pkgname     %{mod_security_name}-%{mod_security_version}
 %global         mod_security_url         https://github.com/SpiderLabs/%{mod_security_name}/archive/v%{mod_security_version}.tar.gz#/%{mod_security_pkgname}.tar.gz
 
+%bcond_without  http_v2_hpack_enc
+
 
 Name:           %{pkg_name}
 Version:        %{main_version}
@@ -183,6 +185,8 @@ Source219:      %{mod_stream_sts_url}
 
 Patch0:         nginx-1.15.2-enable_tls13.patch
 Patch1:         nginx-1.15.2-add_0-rtt.patch
+Patch100:       https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch
+Patch101:       nginx-1.15.2_http2-hpack.patch
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -432,6 +436,10 @@ BuildRequires:  libmodsecurity-devel
 %setup -q -n %{nginx_source_name}
 %patch0 -p1 -b.enable_tls13
 %patch1 -p1 -b.add_0-rtt
+%patch100 -p1 -b.enable-ocsp
+%if %{with http_v2_hpack_enc}
+%patch101 -p1 -b.http2_hpack
+%endif
 
 %__tar xf %{SOURCE200}
 %__tar xf %{SOURCE201}
@@ -492,6 +500,7 @@ export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
   --with-ld-opt="${LDFLAGS} -L./%{ssl_name}/.openssl/lib" \
   --with-openssl=./%{ssl_name} \
   --with-openssl-opt=enable-tls1_3 \
+  %{?_with_http_v2_hpack_enc} \
   --prefix=%{nginx_home} \
   --sbin-path=%{_sbindir}/nginx \
   --modules-path=%{nginx_moddir} \
