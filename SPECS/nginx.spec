@@ -134,6 +134,7 @@
 %global         mod_security_url         https://github.com/SpiderLabs/%{mod_security_name}/archive/v%{mod_security_version}.tar.gz#/%{mod_security_pkgname}.tar.gz
 
 %bcond_without  http_v2_hpack_enc
+%bcond_with     source
 
 
 Name:           %{pkg_name}
@@ -205,12 +206,14 @@ nginx [engine x] is an HTTP and reverse proxy server, a mail proxy server,
 and a generic TCP/UDP proxy server, originally written by Igor Sysoev.
 
 
+%if %{with source}
 %package source
 Summary:        nginx source files
 Requires:       %{name} = %{version}-%{main_release}
 
 %description source
 %{summary}.
+%endif
 
 
 %package mod-http-xslt
@@ -650,6 +653,7 @@ done
 %{__mv} %{buildroot}%{nginx_confdir}/conf.modules.d/{,00-}ngx_stream_module.conf
 
 # Add nginx sources
+%if %{with source}
 %{__install} -p -d -m 0755 %{buildroot}%{_usrsrc}
 %{__cp} -Rp %{_builddir}/%{nginx_source_name} %{buildroot}%{_usrsrc}/%{nginx_source_name}
 
@@ -675,6 +679,7 @@ popd
 %{__rm}  -rf %{nginx_source_name}
 
 popd
+%endif
 
 
 %clean
@@ -780,8 +785,10 @@ esac
 %dir %{nginx_uwsgi_cachedir}
 %dir %{nginx_scgi_cachedir}
 
+%if %{with source}
 %files source
 %{_usrsrc}/%{nginx_source_name}.tar.gz
+%endif
 
 %files mod-http-xslt
 %{nginx_moddir}/ngx_http_xslt_filter_module.so
