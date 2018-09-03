@@ -12,3 +12,4 @@ SOURCES/*.gz
 SOURCES/*.bz2
 SOURCES/*.xz
 SOURCES/*.asc
+SOURCES/nginx_hpack_push_1.15.3.patch
