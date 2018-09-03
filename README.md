@@ -6,7 +6,7 @@ nginx mainline custom build (with boringssl and jemalloc)
 
 ## spec
 
-- nginx 1.15.2 [link](https://nginx.org/en/)
+- nginx 1.15.3 [link](https://nginx.org/en/)
 - boringssl [link](https://boringssl.googlesource.com/boringssl/)
 - jemalloc 3.6.0 [link](https://github.com/jemalloc/jemalloc)
 
@@ -43,6 +43,7 @@ Additional modules
 
 
 # Changelog
+- 2018-09-04 bump up version nginx 1.15.3
 - 2018-08-22 add OCSP patch. add cloudflare HPACK patch
 - 2018-08-16 add support TLS1.3
 - 2018-08-03 bump up version nginx 1.15.2

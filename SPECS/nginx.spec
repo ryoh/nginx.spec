@@ -24,8 +24,8 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.2
-%global         main_release        5%{?dist}
+%global         main_version        1.15.3
+%global         main_release        1%{?dist}
 
 %global         ssl_name            boringssl
 %global         ssl_version         f1af129fb4ddb44bfd1c4aeaa5e07676c43faf28
@@ -134,6 +134,7 @@
 %global         mod_security_url         https://github.com/SpiderLabs/%{mod_security_name}/archive/v%{mod_security_version}.tar.gz#/%{mod_security_pkgname}.tar.gz
 
 %bcond_without  http_v2_hpack_enc
+%bcond_with     source
 
 
 Name:           %{pkg_name}
@@ -183,10 +184,8 @@ Source217:      %{brotli_url}
 Source218:      %{mod_sts_url}
 Source219:      %{mod_stream_sts_url}
 
-Patch0:         nginx-1.15.2-enable_tls13.patch
-Patch1:         nginx-1.15.2-add_0-rtt.patch
 Patch100:       https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch
-Patch101:       nginx-1.15.2_http2-hpack.patch
+Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -207,12 +206,14 @@ nginx [engine x] is an HTTP and reverse proxy server, a mail proxy server,
 and a generic TCP/UDP proxy server, originally written by Igor Sysoev.
 
 
+%if %{with source}
 %package source
 Summary:        nginx source files
 Requires:       %{name} = %{version}-%{main_release}
 
 %description source
 %{summary}.
+%endif
 
 
 %package mod-http-xslt
@@ -434,8 +435,6 @@ BuildRequires:  libmodsecurity-devel
 
 %prep
 %setup -q -n %{nginx_source_name}
-%patch0 -p1 -b.enable_tls13
-%patch1 -p1 -b.add_0-rtt
 %patch100 -p1 -b.enable-ocsp
 %if %{with http_v2_hpack_enc}
 %patch101 -p1 -b.http2_hpack
@@ -654,6 +653,7 @@ done
 %{__mv} %{buildroot}%{nginx_confdir}/conf.modules.d/{,00-}ngx_stream_module.conf
 
 # Add nginx sources
+%if %{with source}
 %{__install} -p -d -m 0755 %{buildroot}%{_usrsrc}
 %{__cp} -Rp %{_builddir}/%{nginx_source_name} %{buildroot}%{_usrsrc}/%{nginx_source_name}
 
@@ -679,6 +679,7 @@ popd
 %{__rm}  -rf %{nginx_source_name}
 
 popd
+%endif
 
 
 %clean
@@ -784,8 +785,10 @@ esac
 %dir %{nginx_uwsgi_cachedir}
 %dir %{nginx_scgi_cachedir}
 
+%if %{with source}
 %files source
 %{_usrsrc}/%{nginx_source_name}.tar.gz
+%endif
 
 %files mod-http-xslt
 %{nginx_moddir}/ngx_http_xslt_filter_module.so
@@ -892,6 +895,8 @@ esac
 
 
 %changelog
+* Tue Sep 04 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.3-1
+- Bump up version nginx 1.15.2 -> 1.15.3
 * Tue Aug 14 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.2-3
 - Add TLS1.3 support (use boringssl. and remove libressl)
 - Add support TLS1.3 Early Data
