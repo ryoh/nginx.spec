@@ -895,6 +895,8 @@ esac
 
 
 %changelog
+* Tue Sep 04 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.3-1
+- Bump up version nginx 1.15.2 -> 1.15.3
 * Tue Aug 14 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.2-3
 - Add TLS1.3 support (use boringssl. and remove libressl)
 - Add support TLS1.3 Early Data
