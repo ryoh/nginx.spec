@@ -24,7 +24,7 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.3
+%global         main_version        1.15.4
 %global         main_release        1%{?dist}
 
 %global         ssl_name            boringssl
