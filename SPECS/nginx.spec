@@ -114,7 +114,7 @@
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
 %global         mod_njs_name             njs
-%global         mod_njs_version          0.2.3
+%global         mod_njs_version          0.2.4
 %global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
