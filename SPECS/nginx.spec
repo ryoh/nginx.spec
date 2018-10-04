@@ -24,7 +24,7 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.4
+%global         main_version        1.15.5
 %global         main_release        1%{?dist}
 
 %global         ssl_name            boringssl
@@ -895,6 +895,8 @@ esac
 
 
 %changelog
+* Thu Oct 05 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.5-1
+- Bump up version nginx 1.15.4 -> 1.15.5
 * Tue Oct 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.4-1
 - Bump up version nginx 1.15.3 -> 1.15.4
 - Bump up version njs 0.2.3 -> 0.2.4
