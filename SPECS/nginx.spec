@@ -28,7 +28,7 @@
 %global         main_release        1%{?dist}
 
 %global         ssl_name            boringssl
-%global         ssl_version         f1af129fb4ddb44bfd1c4aeaa5e07676c43faf28
+%global         ssl_version         3474270abdebbd6235c1391e54aaba5924276666
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://github.com/google/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
 
