@@ -24,7 +24,7 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.5
+%global         main_version        1.15.6
 %global         main_release        1%{?dist}
 
 %global         ssl_name            boringssl
@@ -114,7 +114,7 @@
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
 %global         mod_njs_name             njs
-%global         mod_njs_version          0.2.4
+%global         mod_njs_version          0.2.5
 %global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
@@ -895,6 +895,9 @@ esac
 
 
 %changelog
+* Wed Nov 07 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.6-1
+- Bump up version nginx 1.15.5 -> 1.15.6
+- Bump up version njs 0.2.4 -> 0.2.5
 * Thu Oct 05 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.5-1
 - Bump up version nginx 1.15.4 -> 1.15.5
 * Tue Oct 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.4-1
