@@ -2,12 +2,12 @@
 
 # description
 
-nginx mainline custom build (with boringssl and jemalloc)
+nginx mainline custom build (with openssl 1.1.1a and jemalloc)
 
 ## spec
 
-- nginx 1.15.6 [link](https://nginx.org/en/)
-- boringssl [link](https://boringssl.googlesource.com/boringssl/)
+- nginx 1.15.7 [link](https://nginx.org/en/)
+- openssl [link](https://www.openssl.org/)
 - jemalloc 3.6.0 [link](https://github.com/jemalloc/jemalloc)
 
 ## modules
@@ -21,7 +21,7 @@ Main modules
 - mod-mail
 - mod-stream
 - mod-stream-geoip
-- mod-njs 0.2.5 [link](https://hg.nginx.org/njs)
+- mod-njs 0.2.6 [link](https://hg.nginx.org/njs)
 
 Additional modules
 
@@ -43,6 +43,7 @@ Additional modules
 
 
 # Changelog
+- 2018-11-29 bump up version nginx 1.15.7, njs 0.2.6, openssl 1.1.1a
 - 2018-11-07 bump up version nginx 1.15.6, njs 0.2.5
 - 2018-10-02 bump up version nginx 1.15.4, njs 0.2.4
 - 2018-09-04 bump up version nginx 1.15.3
