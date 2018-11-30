@@ -1,4 +1,4 @@
-#%%global         _hardened_build     1
+%global         _hardened_build     1
 
 %global         nginx_user          nginx
 %global         nginx_group         nginx
@@ -24,13 +24,13 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.6
+%global         main_version        1.15.7
 %global         main_release        1%{?dist}
 
-%global         ssl_name            boringssl
-%global         ssl_version         3474270abdebbd6235c1391e54aaba5924276666
+%global         ssl_name            openssl
+%global         ssl_version         OpenSSL_1_1_1a
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
-%global         ssl_url             https://github.com/google/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
+%global         ssl_url             https://github.com/openssl/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
 
 %global         mod_ndk_name        ngx_devel_kit
 %global         mod_ndk_version     0.3.0
@@ -114,7 +114,7 @@
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
 %global         mod_njs_name             njs
-%global         mod_njs_version          0.2.5
+%global         mod_njs_version          0.2.6
 %global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
@@ -184,7 +184,7 @@ Source217:      %{brotli_url}
 Source218:      %{mod_sts_url}
 Source219:      %{mod_stream_sts_url}
 
-Patch100:       https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch
+#Patch100:       https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch
 Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
 
 Requires:       jemalloc
@@ -435,7 +435,7 @@ BuildRequires:  libmodsecurity-devel
 
 %prep
 %setup -q -n %{nginx_source_name}
-%patch100 -p1 -b.enable-ocsp
+#%patch100 -p1 -b.enable-ocsp
 %if %{with http_v2_hpack_enc}
 %patch101 -p1 -b.http2_hpack
 %endif
@@ -470,35 +470,23 @@ pushd %{mod_brotli_pkgname}/deps
 %__tar xf %{SOURCE217} -C brotli --strip-components 1
 popd
 
-# BoringSSL
-%__mkdir -p %{ssl_name}/build %{ssl_name}/.openssl/lib
+# SSL
+%__mkdir %{ssl_name}
 %__tar xf %{SOURCE100} -C %{ssl_name} --strip-components 1
-pushd %{ssl_name}/.openssl
-%__ln_s ../include .
-popd
 
 
 %build
 CFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags)}"; export CFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 
-# BoringSSL
-pushd %{ssl_name}
-  pushd build
-    cmake -DCMAKE_BUILD_TYPE=Release -DOPENSSL_SMALL=1 -GNinja ..
-    ninja-build
-  popd
-  install -p build/crypto/libcrypto.a build/ssl/libssl.a .openssl/lib/
-popd
-
-export LUAJIT_LIB="/usr/lib64"
+export LUAJIT_LIB="%{_libdir}"
 export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
 
 ./configure \
-  --with-cc-opt="${CFLAGS}  -I./%{ssl_name}/.openssl/include" \
-  --with-ld-opt="${LDFLAGS} -L./%{ssl_name}/.openssl/lib" \
+  --with-cc-opt="${CFLAGS}" \
+  --with-ld-opt="${LDFLAGS}" \
   --with-openssl=./%{ssl_name} \
-  --with-openssl-opt=enable-tls1_3 \
+  --with-openssl-opt="enable-tls1_3" \
   %{?_with_http_v2_hpack_enc} \
   --prefix=%{nginx_home} \
   --sbin-path=%{_sbindir}/nginx \
@@ -567,7 +555,7 @@ export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
   --add-dynamic-module=%{mod_sts_pkgname} \
   --add-dynamic-module=%{mod_stream_sts_pkgname} \
 
-touch %{ssl_name}/.openssl/include/openssl/ssl.h
+#touch %{ssl_name}/.openssl/include/openssl/ssl.h
 
 %make_build
 
@@ -895,10 +883,14 @@ esac
 
 
 %changelog
+* Thu Nov 29 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.7-1
+- Bump up version nginx 1.15.6 -> 1.15.7
+- Bump up version njs 0.2.5 -> 0.2.6
+- Change ssl library boringssl -> openssl
 * Wed Nov 07 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.6-1
 - Bump up version nginx 1.15.5 -> 1.15.6
 - Bump up version njs 0.2.4 -> 0.2.5
-* Thu Oct 05 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.5-1
+* Wed Oct 05 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.5-1
 - Bump up version nginx 1.15.4 -> 1.15.5
 * Tue Oct 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.4-1
 - Bump up version nginx 1.15.3 -> 1.15.4
