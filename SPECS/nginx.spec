@@ -24,7 +24,7 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.7
+%global         main_version        1.15.8
 %global         main_release        1%{?dist}
 
 %global         ssl_name            openssl
@@ -114,7 +114,7 @@
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
 %global         mod_njs_name             njs
-%global         mod_njs_version          0.2.6
+%global         mod_njs_version          0.2.7
 %global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
@@ -157,6 +157,7 @@ Source16:       nginx-http-client.conf
 Source17:       nginx-http-proxy.conf
 Source18:       nginx-http-gzip.conf
 Source19:       nginx-http-ssl.conf
+Source20:       nginx-http-security_headers.conf
 Source50:       00-default.conf
 
 Source100:      %{ssl_url}
@@ -186,6 +187,7 @@ Source219:      %{mod_stream_sts_url}
 
 #Patch100:       https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch
 Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
+Patch200:       https://gitlab.com/buik/openssl/raw/openssl-patch/openssl-1.1.1/OpenSSL1.1.1-prioritize-chacha-feature.patch
 
 Requires:       jemalloc
 Requires(pre):  shadow-utils
@@ -473,6 +475,9 @@ popd
 # SSL
 %__mkdir %{ssl_name}
 %__tar xf %{SOURCE100} -C %{ssl_name} --strip-components 1
+pushd %{ssl_name}
+%__patch -z.backup -p1 <%{PATCH200}
+popd
 
 
 %build
@@ -609,6 +614,7 @@ unlink %{buildroot}%{nginx_confdir}/win-utf
 %{__install} -p -D -m 0640 %{SOURCE17} %{buildroot}%{nginx_confdir}/conf.d/http/proxy.conf
 %{__install} -p -D -m 0640 %{SOURCE18} %{buildroot}%{nginx_confdir}/conf.d/http/gzip.conf
 %{__install} -p -D -m 0640 %{SOURCE19} %{buildroot}%{nginx_confdir}/conf.d/http/ssl.conf
+%{__install} -p -D -m 0640 %{SOURCE20} %{buildroot}%{nginx_confdir}/conf.d/http/security_headers.conf
 
 %{__install} -p -D -m 0640 %{SOURCE50} %{buildroot}%{nginx_confdir}/vhost.d/http/00-default.conf
 
@@ -744,6 +750,7 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.d/http/log_format.conf
 %config(noreplace) %{nginx_confdir}/conf.d/http/proxy.conf
 %config(noreplace) %{nginx_confdir}/conf.d/http/ssl.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/security_headers.conf
 %config(noreplace) %{nginx_confdir}/vhost.d/http/00-default.conf
 
 %{_mandir}/man3/nginx.3pm.gz
@@ -883,6 +890,12 @@ esac
 
 
 %changelog
+* Sat Dec 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-1
+- Bump up version nginx 1.15.8 -> 1.15.8
+- Bump up version njs 0.2.6 -> 0.2.7
+* Sat Dec 01 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.7-2
+- Change ssl.conf (for OpenSSL 1.1.1)
+- Sepalate security_headers.conf from ssl.conf
 * Thu Nov 29 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.7-1
 - Bump up version nginx 1.15.6 -> 1.15.7
 - Bump up version njs 0.2.5 -> 0.2.6
