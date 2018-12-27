@@ -6,7 +6,7 @@ nginx mainline custom build (with openssl 1.1.1a and jemalloc)
 
 ## spec
 
-- nginx 1.15.7 [link](https://nginx.org/en/)
+- nginx 1.15.8 [link](https://nginx.org/en/)
 - openssl [link](https://www.openssl.org/)
 - jemalloc 3.6.0 [link](https://github.com/jemalloc/jemalloc)
 
@@ -21,7 +21,7 @@ Main modules
 - mod-mail
 - mod-stream
 - mod-stream-geoip
-- mod-njs 0.2.6 [link](https://hg.nginx.org/njs)
+- mod-njs 0.2.7 [link](https://hg.nginx.org/njs)
 
 Additional modules
 
@@ -43,6 +43,7 @@ Additional modules
 
 
 # Changelog
+- 2018-12-25 bump up version nginx 1.15.8, njs 0.2.7, and add ssl settings.
 - 2018-11-29 bump up version nginx 1.15.7, njs 0.2.6, openssl 1.1.1a
 - 2018-11-07 bump up version nginx 1.15.6, njs 0.2.5
 - 2018-10-02 bump up version nginx 1.15.4, njs 0.2.4
