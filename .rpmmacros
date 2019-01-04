@@ -1,5 +1,8 @@
 
 %_topdir %(echo $HOME)/nginx.spec
+%_sourcedir %{_topdir}
+%_specdir   %{_topdir}
+
 
 %_smp_mflags %( \
     [ -z "$RPM_BUILD_NCPUS" ] \\\
