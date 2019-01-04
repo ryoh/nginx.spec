@@ -918,7 +918,7 @@ esac
 %changelog
 * Fri Jan 04 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-2
 - Add geoip2 module
-* Sat Dec 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-1
+* Thu Dec 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-1
 - Bump up version nginx 1.15.8 -> 1.15.8
 - Bump up version njs 0.2.6 -> 0.2.7
 * Sat Dec 01 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.7-2
@@ -931,7 +931,7 @@ esac
 * Wed Nov 07 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.6-1
 - Bump up version nginx 1.15.5 -> 1.15.6
 - Bump up version njs 0.2.4 -> 0.2.5
-* Wed Oct 05 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.5-1
+* Fri Oct 05 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.5-1
 - Bump up version nginx 1.15.4 -> 1.15.5
 * Tue Oct 02 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.4-1
 - Bump up version nginx 1.15.3 -> 1.15.4
