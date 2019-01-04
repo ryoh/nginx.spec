@@ -14,3 +14,9 @@ SOURCES/*.xz
 SOURCES/*.asc
 SOURCES/nginx_hpack_push_1.15.3.patch
 SOURCES/OpenSSL1.1.1-prioritize-chacha-feature.patch
+*.gz
+*.bz2
+*.xz
+*.asc
+nginx_hpack_push_1.15.3.patch
+OpenSSL1.1.1-prioritize-chacha-feature.patch

@@ -8,6 +8,9 @@ set -euo pipefail
 readonly RPMMACROS_FILE=".rpmmacros"
 readonly HOME_RPMMACROS="${HOME}/${RPMMACROS_FILE}"
 
+echo "Download some modules."
+spectool -g -R nginx.spec
+
 echo "Set ${RPMMACROS_FILE} to homedir"
 if [[ -f "${HOME_RPMMACROS}" ]]; then
   echo "Found ${HOME_RPMMACROS} overwrite? (y/N) "
@@ -27,4 +30,3 @@ fi
 : "Set .rpmmacros file to home directory"
 ln -sf "${PWD}/${RPMMACROS_FILE}" "${HOME_RPMMACROS}"
 
-spectool -g -R -C SOURCES/ SPECS/nginx.spec
