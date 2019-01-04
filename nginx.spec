@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.15.8
-%global         main_release        2%{?dist}
+%global         main_release        3%{?dist}
 
 %global         ssl_name            openssl
 %global         ssl_version         OpenSSL_1_1_1a
@@ -916,6 +916,8 @@ esac
 
 
 %changelog
+* Fri Jan 04 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-3
+- Change file path for copr.
 * Fri Jan 04 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-2
 - Add geoip2 module
 * Thu Dec 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-1
