@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.15.8
-%global         main_release        1%{?dist}
+%global         main_release        2%{?dist}
 
 %global         ssl_name            openssl
 %global         ssl_version         OpenSSL_1_1_1a
@@ -133,6 +133,11 @@
 %global         mod_security_pkgname     %{mod_security_name}-%{mod_security_version}
 %global         mod_security_url         https://github.com/SpiderLabs/%{mod_security_name}/archive/v%{mod_security_version}.tar.gz#/%{mod_security_pkgname}.tar.gz
 
+%global         mod_geoip2_name          ngx_http_geoip2_module
+%global         mod_geoip2_version       3.2
+%global         mod_geoip2_pkgname       %{mod_geoip2_name}-%{mod_geoip2_version}
+%global         mod_geoip2_url           https://github.com/leev/%{mod_geoip2_name}/archive/%{mod_geoip2_version}.tar.gz#/%{mod_geoip2_pkgname}.tar.gz
+
 %bcond_without  http_v2_hpack_enc
 %bcond_with     source
 
@@ -184,6 +189,7 @@ Source217:      %{brotli_url}
 
 Source218:      %{mod_sts_url}
 Source219:      %{mod_stream_sts_url}
+Source220:      %{mod_geoip2_url}
 
 #Patch100:       https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch
 Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
@@ -435,6 +441,18 @@ BuildRequires:  libmodsecurity-devel
 %{summary}.
 
 
+%package mod-geoip2
+Summary:        nginx geoip2 module
+Release:        %{mod_geoip2_version}.%{main_release}
+Requires:       %{name} = %{version}-%{main_release}
+Requires:       %{name}-mod-stream
+Requires:       libmaxminddb
+BuildRequires:  libmaxminddb-devel
+
+%description mod-geoip2
+%{summary}.
+
+
 %prep
 %setup -q -n %{nginx_source_name}
 #%patch100 -p1 -b.enable-ocsp
@@ -458,6 +476,7 @@ BuildRequires:  libmodsecurity-devel
 %__tar xf %{SOURCE215}
 %__tar xf %{SOURCE218}
 %__tar xf %{SOURCE219}
+%__tar xf %{SOURCE220}
 
 # Pagespeed
 %__mkdir %{mod_pagespeed_pkgname}
@@ -559,6 +578,7 @@ export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
   --add-dynamic-module=%{mod_brotli_pkgname} \
   --add-dynamic-module=%{mod_sts_pkgname} \
   --add-dynamic-module=%{mod_stream_sts_pkgname} \
+  --add-dynamic-module=%{mod_geoip2_pkgname} \
 
 #touch %{ssl_name}/.openssl/include/openssl/ssl.h
 
@@ -888,8 +908,16 @@ esac
 %{nginx_moddir}/ngx_http_modsecurity_module.so
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_modsecurity_module.conf
 
+%files mod-geoip2
+%{nginx_moddir}/ngx_http_geoip2_module.so
+%{nginx_moddir}/ngx_stream_geoip2_module.so
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_geoip2_module.conf
+%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_stream_geoip2_module.conf
+
 
 %changelog
+* Fri Jan 04 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-2
+- Add geoip2 module
 * Sat Dec 27 2018 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-1
 - Bump up version nginx 1.15.8 -> 1.15.8
 - Bump up version njs 0.2.6 -> 0.2.7
