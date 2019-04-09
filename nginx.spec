@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.15.10
-%global         main_release        1%{?dist}
+%global         main_release        2%{?dist}
 
 %global         ssl_name            openssl
 %global         ssl_version         OpenSSL_1_1_1b
@@ -919,6 +919,10 @@ esac
 
 
 %changelog
+* Wed Apr 10 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.10-2
+- Bump up version nginx 1.15.8 -> 1.15.10
+- Bump up version njs 0.2.7 -> 0.3.0
+- Add proxy_headers.conf
 * Fri Jan 04 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-3
 - Change file path for copr.
 * Fri Jan 04 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-2
