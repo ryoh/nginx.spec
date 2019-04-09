@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.15.10
-%global         main_release        2%{?dist}
+%global         main_release        3%{?dist}
 
 %global         ssl_name            openssl
 %global         ssl_version         OpenSSL_1_1_1b
@@ -417,6 +417,7 @@ Requires:       %{name} = %{version}-%{main_release}
 Summary:        nginx nginScript module
 Release:        %{mod_njs_version}.%{main_release}
 Requires:       %{name} = %{version}-%{main_release}
+BuildRequires:  expect-devel libedit-devel
 
 %description mod-njs
 %{summary}.
@@ -697,6 +698,9 @@ popd
 popd
 %endif
 
+# njs packaging
+%{__install} -D -p -m 0755 %{_builddir}/%{nginx_source_name}/%{mod_njs_pkgname}/build/njs %{buildroot}%{_bindir}/njs
+
 
 %clean
 %{__rm} -rf "%{buildroot}"
@@ -890,6 +894,7 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_cache_purge_module.conf
 
 %files mod-njs
+%{_bindir}/njs
 %{nginx_moddir}/ngx_http_js_module.so
 %{nginx_moddir}/ngx_stream_js_module.so
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_js_module.conf
@@ -919,6 +924,8 @@ esac
 
 
 %changelog
+* Wed Apr 10 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.10-3
+- Add njs binary
 * Wed Apr 10 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.10-2
 - Bump up version nginx 1.15.8 -> 1.15.10
 - Bump up version njs 0.2.7 -> 0.3.0
