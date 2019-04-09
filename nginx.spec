@@ -24,11 +24,11 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.8
-%global         main_release        3%{?dist}
+%global         main_version        1.15.10
+%global         main_release        1%{?dist}
 
 %global         ssl_name            openssl
-%global         ssl_version         OpenSSL_1_1_1a
+%global         ssl_version         OpenSSL_1_1_1b
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://github.com/openssl/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
 
@@ -114,7 +114,7 @@
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
 %global         mod_njs_name             njs
-%global         mod_njs_version          0.2.7
+%global         mod_njs_version          0.3.0
 %global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
@@ -163,6 +163,7 @@ Source17:       nginx-http-proxy.conf
 Source18:       nginx-http-gzip.conf
 Source19:       nginx-http-ssl.conf
 Source20:       nginx-http-security_headers.conf
+Source21:       nginx-http-proxy_headers.conf
 Source50:       00-default.conf
 
 Source100:      %{ssl_url}
@@ -635,6 +636,7 @@ unlink %{buildroot}%{nginx_confdir}/win-utf
 %{__install} -p -D -m 0640 %{SOURCE18} %{buildroot}%{nginx_confdir}/conf.d/http/gzip.conf
 %{__install} -p -D -m 0640 %{SOURCE19} %{buildroot}%{nginx_confdir}/conf.d/http/ssl.conf
 %{__install} -p -D -m 0640 %{SOURCE20} %{buildroot}%{nginx_confdir}/conf.d/http/security_headers.conf
+%{__install} -p -D -m 0640 %{SOURCE21} %{buildroot}%{nginx_confdir}/conf.d/http/proxy_headers.conf
 
 %{__install} -p -D -m 0640 %{SOURCE50} %{buildroot}%{nginx_confdir}/vhost.d/http/00-default.conf
 
@@ -771,6 +773,7 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.d/http/proxy.conf
 %config(noreplace) %{nginx_confdir}/conf.d/http/ssl.conf
 %config(noreplace) %{nginx_confdir}/conf.d/http/security_headers.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/proxy_headers.conf
 %config(noreplace) %{nginx_confdir}/vhost.d/http/00-default.conf
 
 %{_mandir}/man3/nginx.3pm.gz
