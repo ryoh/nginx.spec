@@ -24,8 +24,8 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.10
-%global         main_release        3%{?dist}
+%global         main_version        1.15.11
+%global         main_release        1%{?dist}
 
 %global         ssl_name            openssl
 %global         ssl_version         OpenSSL_1_1_1b
@@ -196,6 +196,7 @@ Source220:      %{mod_geoip2_url}
 Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
 Patch200:       https://gitlab.com/buik/openssl/raw/openssl-patch/openssl-1.1.1/OpenSSL1.1.1-prioritize-chacha-feature.patch
 
+Requires:       openssl
 Requires:       jemalloc
 Requires(pre):  shadow-utils
 Requires(post):   systemd 
@@ -417,6 +418,7 @@ Requires:       %{name} = %{version}-%{main_release}
 Summary:        nginx nginScript module
 Release:        %{mod_njs_version}.%{main_release}
 Requires:       %{name} = %{version}-%{main_release}
+Requires:       %{name}-mod-stream = %{version}-%{main_release}
 BuildRequires:  expect-devel libedit-devel
 
 %description mod-njs
@@ -924,6 +926,8 @@ esac
 
 
 %changelog
+* Thu Apr 11 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.11-1
+- Bump up version nginx 1.15.10 -> 1.15.11
 * Wed Apr 10 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.10-3
 - Add njs binary
 * Wed Apr 10 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.10-2
