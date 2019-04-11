@@ -6,8 +6,8 @@ nginx mainline custom build (with openssl 1.1.1a and jemalloc)
 
 ## spec
 
-- nginx 1.15.8 [link](https://nginx.org/en/)
-- openssl 1.1.1a [link](https://www.openssl.org/)
+- nginx 1.15.11 [link](https://nginx.org/en/)
+- openssl 1.1.1b [link](https://www.openssl.org/)
 - jemalloc 3.6.0 [link](https://github.com/jemalloc/jemalloc)
 
 ## modules
@@ -21,7 +21,7 @@ Main modules
 - mod-mail
 - mod-stream
 - mod-stream-geoip
-- mod-njs 0.2.7 [link](https://hg.nginx.org/njs)
+- mod-njs 0.3.0 [link](https://hg.nginx.org/njs)
 
 Additional modules
 
@@ -44,6 +44,7 @@ Additional modules
 
 
 # Changelog
+- 2019-04-11 bump up version nginx 1.15.11, njs 0.3.0
 - 2019-01-04 Add GeoIP2 module.
 - 2018-12-25 bump up version nginx 1.15.8, njs 0.2.7, and add ssl settings.
 - 2018-11-29 bump up version nginx 1.15.7, njs 0.2.6, openssl 1.1.1a
