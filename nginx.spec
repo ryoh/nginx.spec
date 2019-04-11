@@ -24,11 +24,11 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.8
-%global         main_release        3%{?dist}
+%global         main_version        1.15.11
+%global         main_release        1%{?dist}
 
 %global         ssl_name            openssl
-%global         ssl_version         OpenSSL_1_1_1a
+%global         ssl_version         OpenSSL_1_1_1b
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://github.com/openssl/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
 
@@ -114,7 +114,7 @@
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
 %global         mod_njs_name             njs
-%global         mod_njs_version          0.2.7
+%global         mod_njs_version          0.3.0
 %global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
@@ -163,6 +163,7 @@ Source17:       nginx-http-proxy.conf
 Source18:       nginx-http-gzip.conf
 Source19:       nginx-http-ssl.conf
 Source20:       nginx-http-security_headers.conf
+Source21:       nginx-http-proxy_headers.conf
 Source50:       00-default.conf
 
 Source100:      %{ssl_url}
@@ -195,6 +196,7 @@ Source220:      %{mod_geoip2_url}
 Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
 Patch200:       https://gitlab.com/buik/openssl/raw/openssl-patch/openssl-1.1.1/OpenSSL1.1.1-prioritize-chacha-feature.patch
 
+Requires:       openssl
 Requires:       jemalloc
 Requires(pre):  shadow-utils
 Requires(post):   systemd 
@@ -416,6 +418,8 @@ Requires:       %{name} = %{version}-%{main_release}
 Summary:        nginx nginScript module
 Release:        %{mod_njs_version}.%{main_release}
 Requires:       %{name} = %{version}-%{main_release}
+Requires:       %{name}-mod-stream = %{version}-%{main_release}
+BuildRequires:  expect-devel libedit-devel
 
 %description mod-njs
 %{summary}.
@@ -635,6 +639,7 @@ unlink %{buildroot}%{nginx_confdir}/win-utf
 %{__install} -p -D -m 0640 %{SOURCE18} %{buildroot}%{nginx_confdir}/conf.d/http/gzip.conf
 %{__install} -p -D -m 0640 %{SOURCE19} %{buildroot}%{nginx_confdir}/conf.d/http/ssl.conf
 %{__install} -p -D -m 0640 %{SOURCE20} %{buildroot}%{nginx_confdir}/conf.d/http/security_headers.conf
+%{__install} -p -D -m 0640 %{SOURCE21} %{buildroot}%{nginx_confdir}/conf.d/http/proxy_headers.conf
 
 %{__install} -p -D -m 0640 %{SOURCE50} %{buildroot}%{nginx_confdir}/vhost.d/http/00-default.conf
 
@@ -694,6 +699,9 @@ popd
 
 popd
 %endif
+
+# njs packaging
+%{__install} -D -p -m 0755 %{_builddir}/%{nginx_source_name}/%{mod_njs_pkgname}/build/njs %{buildroot}%{_bindir}/njs
 
 
 %clean
@@ -771,6 +779,7 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.d/http/proxy.conf
 %config(noreplace) %{nginx_confdir}/conf.d/http/ssl.conf
 %config(noreplace) %{nginx_confdir}/conf.d/http/security_headers.conf
+%config(noreplace) %{nginx_confdir}/conf.d/http/proxy_headers.conf
 %config(noreplace) %{nginx_confdir}/vhost.d/http/00-default.conf
 
 %{_mandir}/man3/nginx.3pm.gz
@@ -887,6 +896,7 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_cache_purge_module.conf
 
 %files mod-njs
+%{_bindir}/njs
 %{nginx_moddir}/ngx_http_js_module.so
 %{nginx_moddir}/ngx_stream_js_module.so
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_js_module.conf
@@ -916,6 +926,14 @@ esac
 
 
 %changelog
+* Thu Apr 11 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.11-1
+- Bump up version nginx 1.15.10 -> 1.15.11
+* Wed Apr 10 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.10-3
+- Add njs binary
+* Wed Apr 10 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.10-2
+- Bump up version nginx 1.15.8 -> 1.15.10
+- Bump up version njs 0.2.7 -> 0.3.0
+- Add proxy_headers.conf
 * Fri Jan 04 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-3
 - Change file path for copr.
 * Fri Jan 04 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.8-2
