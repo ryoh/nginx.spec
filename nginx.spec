@@ -24,11 +24,16 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.15.12
+%global         main_version        1.17.0
 %global         main_release        1%{?dist}
 
+%global         mod_njs_name        njs
+%global         mod_njs_version     0.3.2
+%global         mod_njs_pkgname     %{mod_njs_name}-%{mod_njs_version}
+%global         mod_njs_url         https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
+
 %global         ssl_name            openssl
-%global         ssl_version         OpenSSL_1_1_1b
+%global         ssl_version         OpenSSL_1_1_1c
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://github.com/openssl/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
 
@@ -113,11 +118,6 @@
 %global         mod_cache_purge_pkgname  %{mod_cache_purge_name}-%{mod_cache_purge_version}
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
-%global         mod_njs_name             njs
-%global         mod_njs_version          0.3.1
-%global         mod_njs_pkgname          %{mod_njs_name}-%{mod_njs_version}
-%global         mod_njs_url              https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
-
 %global         mod_brotli_name          ngx_brotli
 %global         mod_brotli_version       0.1.2
 %global         mod_brotli_pkgname       %{mod_brotli_name}-%{mod_brotli_version}
@@ -167,7 +167,6 @@ Source21:       nginx-http-proxy_headers.conf
 Source50:       00-default.conf
 
 Source100:      %{ssl_url}
-#Source101:      https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/%{ssl_pkgname}.tar.gz.asc
 
 Source200:      %{mod_ndk_url}
 Source201:      %{mod_lua_url}
@@ -192,8 +191,9 @@ Source218:      %{mod_sts_url}
 Source219:      %{mod_stream_sts_url}
 Source220:      %{mod_geoip2_url}
 
-#Patch100:       https://raw.githubusercontent.com/kn007/patch/master/Enable_BoringSSL_OCSP.patch
 Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
+Patch102:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b.patch
+Patch103:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b_ciphers.patch
 Patch200:       https://gitlab.com/buik/openssl/raw/openssl-patch/openssl-1.1.1/OpenSSL1.1.1-prioritize-chacha-feature.patch
 
 Requires:       openssl
@@ -459,10 +459,9 @@ BuildRequires:  libmaxminddb-devel
 
 %prep
 %setup -q -n %{nginx_source_name}
-#%patch100 -p1 -b.enable-ocsp
-%if %{with http_v2_hpack_enc}
-%patch101 -p1 -b.http2_hpack
-%endif
+#%if %{with http_v2_hpack_enc}
+#%patch101 -p1 -b.http2_hpack
+#%endif
 
 %__tar xf %{SOURCE200}
 %__tar xf %{SOURCE201}
@@ -926,6 +925,8 @@ esac
 
 
 %changelog
+* Thu Jun 13 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.0-0
+- Bump up version nginx 1.15.11 -> 1.17.0
 * Mon Apr 22 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.12-1
 - Bump up version nginx 1.15.11 -> 1.15.12
 - Bump up version njs 0.3.0 -> 0.3.1
