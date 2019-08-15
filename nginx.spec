@@ -24,11 +24,11 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.17.0
-%global         main_release        1%{?dist}
+%global         main_version        1.17.3
+%global         main_release        0%{?dist}
 
 %global         mod_njs_name        njs
-%global         mod_njs_version     0.3.2
+%global         mod_njs_version     0.3.4
 %global         mod_njs_pkgname     %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url         https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
@@ -925,6 +925,9 @@ esac
 
 
 %changelog
+* Thu Aug 15 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-0
+- Bump up version nginx 1.17.0 -> 1.17.3
+- Bump up version njs 0.3.1 -> 0.3.4
 * Thu Jun 13 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.0-0
 - Bump up version nginx 1.15.11 -> 1.17.0
 * Mon Apr 22 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.15.12-1
