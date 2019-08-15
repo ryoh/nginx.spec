@@ -25,7 +25,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.17.3
-%global         main_release        1%{?dist}
+%global         main_release        0%{?dist}
 
 %global         mod_njs_name        njs
 %global         mod_njs_version     0.3.4
