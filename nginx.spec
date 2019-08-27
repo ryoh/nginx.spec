@@ -503,7 +503,7 @@ popd
 
 
 %build
-CFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags)}"; export CFLAGS;
+CFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags) -O3 -mtune=native}"; export CFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 
 export LUAJIT_LIB="%{_libdir}"
