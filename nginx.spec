@@ -1,4 +1,5 @@
-%global         _hardened_build     1
+%global         _performance_build  1
+%undefine       _hardened_build
 
 %global         nginx_user          nginx
 %global         nginx_group         nginx
@@ -25,10 +26,10 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.17.3
-%global         main_release        0%{?dist}
+%global         main_release        1%{?dist}
 
 %global         mod_njs_name        njs
-%global         mod_njs_version     0.3.4
+%global         mod_njs_version     0.3.5
 %global         mod_njs_pkgname     %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url         https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
@@ -36,6 +37,11 @@
 %global         ssl_version         OpenSSL_1_1_1c
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://github.com/openssl/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
+
+%global         zlib_name           zlib
+%global         zlib_version        1.2.8
+%global         zlib_pkgname        %{zlib_name}-%{zlib_version}
+%global         zlib_url            https://github.com/cloudflare/%{zlib_name}/archive/v%{zlib_version}.tar.gz#%{zlib_pkgname}.tar.gz
 
 %global         mod_ndk_name        ngx_devel_kit
 %global         mod_ndk_version     0.3.0
@@ -167,6 +173,7 @@ Source21:       nginx-http-proxy_headers.conf
 Source50:       00-default.conf
 
 Source100:      %{ssl_url}
+Source101:      %{zlib_url}
 
 Source200:      %{mod_ndk_url}
 Source201:      %{mod_lua_url}
@@ -501,19 +508,26 @@ pushd %{ssl_name}
 %__patch -z.backup -p1 <%{PATCH200}
 popd
 
+# Cloudflare Zlib
+%__mkdir %{zlib_name}
+%__tar xf %{SOURCE101} -C %{zlib_name} --strip-components 1
+
 
 %build
-CFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags)}"; export CFLAGS;
+CFLAGS="${CFLAGS:--O3 -march=native -fuse-ld=gold %{optflags} $(pcre-config --cflags) -Wno-error=strict-aliasing -Wformat -Werror=format-security -Wimplicit-fallthrough=0 -fcode-hoisting -Wno-cast-function-type -Wno-format-extra-args -Wno-deprecated-declarations -gsplit-dwarf}"; export CFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 
 export LUAJIT_LIB="%{_libdir}"
 export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
 
+%enable_devtoolset8
+
 ./configure \
-  --with-cc-opt="${CFLAGS}" \
+  --with-cc-opt="${CFLAGS} -DTCP_FASTOPEN=23" \
   --with-ld-opt="${LDFLAGS}" \
   --with-openssl=./%{ssl_name} \
-  --with-openssl-opt="enable-tls1_3" \
+  --with-openssl-opt="enable-ec_nistp_64_gcc_128 enable-tls1_3" \
+  --with-zlib=./%{zlib_name} \
   %{?_with_http_v2_hpack_enc} \
   --prefix=%{nginx_home} \
   --sbin-path=%{_sbindir}/nginx \
@@ -925,6 +939,8 @@ esac
 
 
 %changelog
+* Tue Aug 27 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-1
+- Bump up version njs 0.3.4 -> 0.3.5
 * Thu Aug 15 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-0
 - Bump up version nginx 1.17.0 -> 1.17.3
 - Bump up version njs 0.3.1 -> 0.3.4
