@@ -38,6 +38,11 @@
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://github.com/openssl/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
 
+%global         zlib_name           zlib
+%global         zlib_version        1.2.8
+%global         zlib_pkgname        %{zlib_name}-%{zlib_version}
+%global         zlib_url            https://github.com/cloudflare/%{zlib_name}/archive/v%{zlib_version}.tar.gz#%{zlib_pkgname}.tar.gz
+
 %global         mod_ndk_name        ngx_devel_kit
 %global         mod_ndk_version     0.3.0
 %global         mod_ndk_pkgname     %{mod_ndk_name}-%{mod_ndk_version}
@@ -168,6 +173,7 @@ Source21:       nginx-http-proxy_headers.conf
 Source50:       00-default.conf
 
 Source100:      %{ssl_url}
+Source101:      %{zlib_url}
 
 Source200:      %{mod_ndk_url}
 Source201:      %{mod_lua_url}
@@ -502,6 +508,10 @@ pushd %{ssl_name}
 %__patch -z.backup -p1 <%{PATCH200}
 popd
 
+# Cloudflare Zlib
+%__mkdir %{zlib_name}
+%__tar xf %{SOURCE101} -C %{zlib_name} --strip-components 1
+
 
 %build
 CFLAGS="${CFLAGS:--O3 -march=native -fuse-ld=gold %{optflags} $(pcre-config --cflags) -Wno-error=strict-aliasing -Wformat -Werror=format-security -Wimplicit-fallthrough=0 -fcode-hoisting -Wno-cast-function-type -Wno-format-extra-args -Wno-deprecated-declarations}"; export CFLAGS;
@@ -517,6 +527,7 @@ export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
   --with-ld-opt="${LDFLAGS}" \
   --with-openssl=./%{ssl_name} \
   --with-openssl-opt="enable-ec_nistp_64_gcc_128 enable-tls1_3" \
+  --with-zlib=./%{zlib_name} \
   %{?_with_http_v2_hpack_enc} \
   --prefix=%{nginx_home} \
   --sbin-path=%{_sbindir}/nginx \
