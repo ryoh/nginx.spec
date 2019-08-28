@@ -1,4 +1,5 @@
-%global         _hardened_build     1
+%global         _performance_build  1
+%undefine       _hardened_build
 
 %global         nginx_user          nginx
 %global         nginx_group         nginx
@@ -503,17 +504,19 @@ popd
 
 
 %build
-CFLAGS="${CFLAGS:-%{optflags} $(pcre-config --cflags) -O3 -mtune=native}"; export CFLAGS;
+CFLAGS="${CFLAGS:--O3 -march=native -fuse-ld=gold %{optflags} $(pcre-config --cflags) -Wno-error=strict-aliasing -Wformat -Werror=format-security -Wimplicit-fallthrough=0 -fcode-hoisting -Wno-cast-function-type -Wno-format-extra-args -Wno-deprecated-declarations}"; export CFLAGS;
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 
 export LUAJIT_LIB="%{_libdir}"
 export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
 
+%enable_devtoolset8
+
 ./configure \
-  --with-cc-opt="${CFLAGS}" \
+  --with-cc-opt="${CFLAGS} -DTCP_FASTOPEN=23" \
   --with-ld-opt="${LDFLAGS}" \
   --with-openssl=./%{ssl_name} \
-  --with-openssl-opt="enable-tls1_3" \
+  --with-openssl-opt="enable-ec_nistp_64_gcc_128 enable-tls1_3" \
   %{?_with_http_v2_hpack_enc} \
   --prefix=%{nginx_home} \
   --sbin-path=%{_sbindir}/nginx \
@@ -925,7 +928,7 @@ esac
 
 
 %changelog
-* Thu Aug 27 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-1
+* Tue Aug 27 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-1
 - Bump up version njs 0.3.4 -> 0.3.5
 * Thu Aug 15 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-0
 - Bump up version nginx 1.17.0 -> 1.17.3
