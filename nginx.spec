@@ -531,7 +531,8 @@ LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 export LUAJIT_LIB="%{_libdir}"
 export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
 
-%enable_devtoolset8
+#%%enable_devtoolset8
+source scl_source enable devtoolset-8 ||:
 
 ./configure \
   --with-cc-opt="${CFLAGS} -DTCP_FASTOPEN=23" \
