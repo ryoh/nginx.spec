@@ -41,7 +41,7 @@
 %global         zlib_name           zlib
 %global         zlib_version        1.2.8
 %global         zlib_pkgname        %{zlib_name}-%{zlib_version}
-%global         zlib_url            https://github.com/cloudflare/%{zlib_name}/archive/v%{zlib_version}.tar.gz#%{zlib_pkgname}.tar.gz
+%global         zlib_url            https://github.com/cloudflare/%{zlib_name}/archive/v%{zlib_version}.tar.gz#/%{zlib_pkgname}.tar.gz
 
 %global         mod_ndk_name        ngx_devel_kit
 %global         mod_ndk_version     0.3.0
