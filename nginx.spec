@@ -199,9 +199,8 @@ Source219:      %{mod_stream_sts_url}
 Source220:      %{mod_geoip2_url}
 
 Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
-Patch102:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_fix.patch
-Patch103:       https://raw.githubusercontent.com/cloudflare/sslconfig/master/patches/nginx__1.11.5_dynamic_tls_records.patch
-Patch104:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_io_uring.patch
+Patch102:       https://raw.githubusercontent.com/centminmod/centminmod/123.09beta01/patches/cloudflare/nginx__dynamic_tls_records_1015008.patch
+Patch103:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_io_uring.patch
 Patch200:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b_ciphers.patch
 
 Requires:       openssl
@@ -470,6 +469,8 @@ BuildRequires:  libmaxminddb-devel
 %if %{with http_v2_hpack_enc}
 %patch101 -p1 -b.hpack_push
 %endif
+
+%patch102 -p1 -b.dynamic_tls
 
 %__tar xf %{SOURCE200}
 %__tar xf %{SOURCE201}
