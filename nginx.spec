@@ -145,6 +145,8 @@
 %global         mod_geoip2_url           https://github.com/leev/%{mod_geoip2_name}/archive/%{mod_geoip2_version}.tar.gz#/%{mod_geoip2_pkgname}.tar.gz
 
 %bcond_without  http_v2_hpack_enc
+%bcond_without  dynamic_tls
+%bcond_with     io_uring
 %bcond_with     source
 
 
@@ -470,8 +472,13 @@ BuildRequires:  libmaxminddb-devel
 %patch101 -p1 -b.hpack_push
 %endif
 
+%if %{with dynamic_tls}
 %patch102 -p1 -b.dynamic_tls
+%endif
+
+%if %{with io_uring}
 %patch103 -p1 -b.io_uring
+%endif
 
 %__tar xf %{SOURCE200}
 %__tar xf %{SOURCE201}
