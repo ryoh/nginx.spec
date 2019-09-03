@@ -26,7 +26,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.17.3
-%global         main_release        1%{?dist}
+%global         main_release        2%{?dist}
 
 %global         mod_njs_name        njs
 %global         mod_njs_version     0.3.5
@@ -200,7 +200,7 @@ Source218:      %{mod_sts_url}
 Source219:      %{mod_stream_sts_url}
 Source220:      %{mod_geoip2_url}
 
-Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
+Patch101:       nginx_hpack_push_1.17.3.patch
 Patch102:       https://raw.githubusercontent.com/centminmod/centminmod/123.09beta01/patches/cloudflare/nginx__dynamic_tls_records_1015008.patch
 Patch103:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_io_uring.patch
 Patch200:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b_ciphers.patch
@@ -950,6 +950,10 @@ esac
 
 
 %changelog
+* Tue Sep 03 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-2
+- Add support HPACK enc patch
+- Add support dynamic tls record patch
+- Add support io_uring patch
 * Tue Aug 27 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-1
 - Bump up version njs 0.3.4 -> 0.3.5
 * Thu Aug 15 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-0
