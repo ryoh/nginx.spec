@@ -1,5 +1,5 @@
 diff --git a/auto/modules b/auto/modules
-index 09bfcb08..645eb897 100644
+index 73a9bae9..67fe2cb3 100644
 --- a/auto/modules
 +++ b/auto/modules
 @@ -438,6 +438,10 @@ if [ $HTTP = YES ]; then
@@ -14,7 +14,7 @@ index 09bfcb08..645eb897 100644
          ngx_module_name=ngx_http_static_module
          ngx_module_incs=
 diff --git a/auto/options b/auto/options
-index d8b421b0..55b339e6 100644
+index 59f0449d..4abd20ac 100644
 --- a/auto/options
 +++ b/auto/options
 @@ -59,6 +59,7 @@ HTTP_CHARSET=YES
@@ -25,7 +25,7 @@ index d8b421b0..55b339e6 100644
  HTTP_SSI=YES
  HTTP_POSTPONE=NO
  HTTP_REALIP=NO
-@@ -225,6 +226,7 @@ $0: warning: the \"--with-ipv6\" option is deprecated"
+@@ -223,6 +224,7 @@ $0: warning: the \"--with-ipv6\" option is deprecated"
  
          --with-http_ssl_module)          HTTP_SSL=YES               ;;
          --with-http_v2_module)           HTTP_V2=YES                ;;
@@ -33,7 +33,7 @@ index d8b421b0..55b339e6 100644
          --with-http_realip_module)       HTTP_REALIP=YES            ;;
          --with-http_addition_module)     HTTP_ADDITION=YES          ;;
          --with-http_xslt_module)         HTTP_XSLT=YES              ;;
-@@ -440,6 +442,7 @@ cat << END
+@@ -434,6 +436,7 @@ cat << END
  
    --with-http_ssl_module             enable ngx_http_ssl_module
    --with-http_v2_module              enable ngx_http_v2_module
@@ -122,10 +122,10 @@ index 54e867d3..322b3df9 100644
  
  #endif /* _NGX_MURMURHASH_H_INCLUDED_ */
 diff --git a/src/http/v2/ngx_http_v2.c b/src/http/v2/ngx_http_v2.c
-index e7770192..c18b60ca 100644
---- a/src/http/v2/ngx_http_v2.c	2018-07-24 22:11:00.000000000 +0900
-+++ b/src/http/v2/ngx_http_v2.c	2018-08-20 22:07:42.592917695 +0900
-@@ -272,6 +272,8 @@
+index 77ebb847..303d157f 100644
+--- a/src/http/v2/ngx_http_v2.c
++++ b/src/http/v2/ngx_http_v2.c
+@@ -272,6 +272,8 @@ ngx_http_v2_init(ngx_event_t *rev)
  
      h2c->table_update = 1;
  
@@ -134,7 +134,7 @@ index e7770192..c18b60ca 100644
      h2scf = ngx_http_get_module_srv_conf(hc->conf_ctx, ngx_http_v2_module);
  
      h2c->concurrent_pushes = h2scf->concurrent_pushes;
-@@ -2075,6 +2077,17 @@
+@@ -2075,6 +2077,17 @@ ngx_http_v2_state_settings_params(ngx_http_v2_connection_t *h2c, u_char *pos,
              h2c->concurrent_pushes = ngx_min(value, h2scf->concurrent_pushes);
              break;
  
@@ -307,7 +307,7 @@ index ac792084..d1fb7217 100644
  {
      if (value < prefix) {
 diff --git a/src/http/v2/ngx_http_v2_filter_module.c b/src/http/v2/ngx_http_v2_filter_module.c
-index 853faefd..61e1f051 100644
+index 029e8ece..d293f06c 100644
 --- a/src/http/v2/ngx_http_v2_filter_module.c
 +++ b/src/http/v2/ngx_http_v2_filter_module.c
 @@ -23,10 +23,53 @@
@@ -421,26 +421,24 @@ index 853faefd..61e1f051 100644
  
      if (r->headers_out.server == NULL) {
 -
-         if (clcf->server_tokens == NGX_HTTP_SERVER_TOKENS_ON) {
+-        if (clcf->server_tokens == NGX_HTTP_SERVER_TOKENS_ON) {
 -            ngx_log_debug1(NGX_LOG_DEBUG_HTTP, fc->log, 0,
 -                           "http2 output header: \"server: %s\"",
 -                           NGINX_VER);
-+            pos = ngx_http_v2_write_header_str("server", NGINX_VER);
- 
-         } else if (clcf->server_tokens == NGX_HTTP_SERVER_TOKENS_BUILD) {
+-
+-        } else if (clcf->server_tokens == NGX_HTTP_SERVER_TOKENS_BUILD) {
 -            ngx_log_debug1(NGX_LOG_DEBUG_HTTP, fc->log, 0,
 -                           "http2 output header: \"server: %s\"",
 -                           NGINX_VER_BUILD);
-+            pos = ngx_http_v2_write_header_str("server", NGINX_VER_BUILD);
- 
-         } else {
+-
+-        } else {
 -            ngx_log_debug0(NGX_LOG_DEBUG_HTTP, fc->log, 0,
 -                           "http2 output header: \"server: nginx\"");
 -        }
 -
 -        *pos++ = ngx_http_v2_inc_indexed(NGX_HTTP_V2_SERVER_INDEX);
 -
--        if (clcf->server_tokens == NGX_HTTP_SERVER_TOKENS_ON) {
+         if (clcf->server_tokens == NGX_HTTP_SERVER_TOKENS_ON) {
 -            if (nginx_ver[0] == '\0') {
 -                p = ngx_http_v2_write_value(nginx_ver, (u_char *) NGINX_VER,
 -                                            sizeof(NGINX_VER) - 1, tmp);
@@ -448,8 +446,9 @@ index 853faefd..61e1f051 100644
 -            }
 -
 -            pos = ngx_cpymem(pos, nginx_ver, nginx_ver_len);
--
--        } else if (clcf->server_tokens == NGX_HTTP_SERVER_TOKENS_BUILD) {
++            pos = ngx_http_v2_write_header_str("server", NGINX_VER);
+ 
+         } else if (clcf->server_tokens == NGX_HTTP_SERVER_TOKENS_BUILD) {
 -            if (nginx_ver_build[0] == '\0') {
 -                p = ngx_http_v2_write_value(nginx_ver_build,
 -                                            (u_char *) NGINX_VER_BUILD,
@@ -458,8 +457,9 @@ index 853faefd..61e1f051 100644
 -            }
 -
 -            pos = ngx_cpymem(pos, nginx_ver_build, nginx_ver_build_len);
--
--        } else {
++            pos = ngx_http_v2_write_header_str("server", NGINX_VER_BUILD);
+ 
+         } else {
 -            pos = ngx_cpymem(pos, nginx, sizeof(nginx));
 +            pos = ngx_http_v2_write_header_str("server", "nginx");
          }
@@ -574,13 +574,13 @@ index 853faefd..61e1f051 100644
 -#endif
 -
 -        *pos++ = 0;
--
--        pos = ngx_http_v2_write_name(pos, header[i].key.data,
--                                     header[i].key.len, tmp);
 +        pos = ngx_http_v2_write_header(h2c, pos, header[i].key.data,
 +                                       header[i].key.len, header[i].value.data,
 +                                       header[i].value.len, tmp);
  
+-        pos = ngx_http_v2_write_name(pos, header[i].key.data,
+-                                     header[i].key.len, tmp);
+-
 -        pos = ngx_http_v2_write_value(pos, header[i].value.data,
 -                                      header[i].value.len, tmp);
      }
@@ -626,9 +626,9 @@ index 853faefd..61e1f051 100644
 -    pos = ngx_http_v2_write_value(pos, path->data, path->len, tmp);
 +    pos = ngx_http_v2_write_header_pot(":path", path);
  
-     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, fc->log, 0,
-                    "http2 push header: \":scheme: %V\"", &r->schema);
-@@ -1048,11 +1019,15 @@ ngx_http_v2_push_resource(ngx_http_request_t *r, ngx_str_t *path,
+ #if (NGX_HTTP_SSL)
+     if (fc->ssl) {
+@@ -1046,11 +1017,15 @@ ngx_http_v2_push_resource(ngx_http_request_t *r, ngx_str_t *path,
              continue;
          }
  

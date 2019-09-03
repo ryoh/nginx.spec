@@ -199,9 +199,10 @@ Source219:      %{mod_stream_sts_url}
 Source220:      %{mod_geoip2_url}
 
 Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
-Patch102:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b.patch
-Patch103:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b_ciphers.patch
-Patch200:       https://gitlab.com/buik/openssl/raw/openssl-patch/openssl-1.1.1/OpenSSL1.1.1-prioritize-chacha-feature.patch
+Patch102:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_fix.patch
+Patch103:       https://raw.githubusercontent.com/cloudflare/sslconfig/master/patches/nginx__1.11.5_dynamic_tls_records.patch
+Patch104:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_io_uring.patch
+Patch200:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b_ciphers.patch
 
 Requires:       openssl
 Requires:       jemalloc
@@ -466,9 +467,9 @@ BuildRequires:  libmaxminddb-devel
 
 %prep
 %setup -q -n %{nginx_source_name}
-#%if %{with http_v2_hpack_enc}
-#%patch101 -p1 -b.http2_hpack
-#%endif
+%if %{with http_v2_hpack_enc}
+%patch101 -p1 -b.hpack_push
+%endif
 
 %__tar xf %{SOURCE200}
 %__tar xf %{SOURCE201}
@@ -505,7 +506,8 @@ popd
 %__mkdir %{ssl_name}
 %__tar xf %{SOURCE100} -C %{ssl_name} --strip-components 1
 pushd %{ssl_name}
-%__patch -z.backup -p1 <%{PATCH200}
+#$%__patch -z.backup -p1 <%{PATCH200}
+%patch200 -z.backup -p1
 popd
 
 # Cloudflare Zlib
