@@ -471,6 +471,7 @@ BuildRequires:  libmaxminddb-devel
 %endif
 
 %patch102 -p1 -b.dynamic_tls
+%patch103 -p1 -b.io_uring
 
 %__tar xf %{SOURCE200}
 %__tar xf %{SOURCE201}
