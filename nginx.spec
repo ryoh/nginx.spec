@@ -26,7 +26,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.17.3
-%global         main_release        1%{?dist}
+%global         main_release        2%{?dist}
 
 %global         mod_njs_name        njs
 %global         mod_njs_version     0.3.5
@@ -145,6 +145,8 @@
 %global         mod_geoip2_url           https://github.com/leev/%{mod_geoip2_name}/archive/%{mod_geoip2_version}.tar.gz#/%{mod_geoip2_pkgname}.tar.gz
 
 %bcond_without  http_v2_hpack_enc
+%bcond_without  dynamic_tls
+%bcond_with     io_uring
 %bcond_with     source
 
 
@@ -198,10 +200,10 @@ Source218:      %{mod_sts_url}
 Source219:      %{mod_stream_sts_url}
 Source220:      %{mod_geoip2_url}
 
-Patch101:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch
-Patch102:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b.patch
-Patch103:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b_ciphers.patch
-Patch200:       https://gitlab.com/buik/openssl/raw/openssl-patch/openssl-1.1.1/OpenSSL1.1.1-prioritize-chacha-feature.patch
+Patch101:       nginx_hpack_push_1.17.3.patch
+Patch102:       https://raw.githubusercontent.com/centminmod/centminmod/123.09beta01/patches/cloudflare/nginx__dynamic_tls_records_1015008.patch
+Patch103:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_io_uring.patch
+Patch200:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b_ciphers.patch
 
 Requires:       openssl
 Requires:       jemalloc
@@ -466,9 +468,17 @@ BuildRequires:  libmaxminddb-devel
 
 %prep
 %setup -q -n %{nginx_source_name}
-#%if %{with http_v2_hpack_enc}
-#%patch101 -p1 -b.http2_hpack
-#%endif
+%if %{with http_v2_hpack_enc}
+%patch101 -p1 -b.hpack_push
+%endif
+
+%if %{with dynamic_tls}
+%patch102 -p1 -b.dynamic_tls
+%endif
+
+%if %{with io_uring}
+%patch103 -p1 -b.io_uring
+%endif
 
 %__tar xf %{SOURCE200}
 %__tar xf %{SOURCE201}
@@ -505,7 +515,8 @@ popd
 %__mkdir %{ssl_name}
 %__tar xf %{SOURCE100} -C %{ssl_name} --strip-components 1
 pushd %{ssl_name}
-%__patch -z.backup -p1 <%{PATCH200}
+#$%__patch -z.backup -p1 <%{PATCH200}
+%patch200 -z.backup -p1
 popd
 
 # Cloudflare Zlib
@@ -939,6 +950,10 @@ esac
 
 
 %changelog
+* Tue Sep 03 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-2
+- Add support HPACK enc patch
+- Add support dynamic tls record patch
+- Add support io_uring patch
 * Tue Aug 27 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-1
 - Bump up version njs 0.3.4 -> 0.3.5
 * Thu Aug 15 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-0
