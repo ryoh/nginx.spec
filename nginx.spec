@@ -540,7 +540,7 @@ source scl_source enable devtoolset-8 ||:
   --with-openssl=./%{ssl_name} \
   --with-openssl-opt="enable-ec_nistp_64_gcc_128 enable-tls1_3" \
   --with-zlib=./%{zlib_name} \
-  %{?_with_http_v2_hpack_enc} \
+  %{?with_http_v2_hpack_enc:--with-http_v2_hpack_enc} \
   --prefix=%{nginx_home} \
   --sbin-path=%{_sbindir}/nginx \
   --modules-path=%{nginx_moddir} \
