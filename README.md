@@ -6,8 +6,8 @@ nginx mainline custom build (with openssl 1.1.1c and jemalloc)
 
 ## spec
 
-- nginx 1.17.3 [link](https://nginx.org/en/)
-- openssl 1.1.1c [link](https://www.openssl.org/)
+- nginx 1.17.10 [link](https://nginx.org/en/)
+- openssl 1.1.1f [link](https://www.openssl.org/)
 - jemalloc 3.6.0 [link](https://github.com/jemalloc/jemalloc)
 
 ## modules
@@ -21,17 +21,17 @@ Main modules
 - mod-mail
 - mod-stream
 - mod-stream-geoip
-- mod-njs 0.3.5 [link](https://hg.nginx.org/njs)
+- mod-njs 0.3.9 [link](https://hg.nginx.org/njs)
 
 Additional modules
 
 - mod-brotli 1.0.2 [link](https://github.com/eustas/ngx_brotli)
 - mod-echo 0.61 [link](https://github.com/openresty/echo-nginx-module)
 - mod-headers-more 0.33 [link](https://github.com/openresty/headers-more-nginx-module)
-- mod-http-lua 0.10.13 [link](https://github.com/openresty/lua-nginx-module)
+- mod-http-lua 0.10.15 [link](https://github.com/openresty/lua-nginx-module)
 - mod-http-lua-upstream 0.07 [link](https://github.com/openresty/lua-upstream-nginx-module)
 - mod-memc 0.18 [link](https://github.com/openresty/memc-nginx-module)
-- mod-naxsi 0.55.3 [link](https://github.com/nbs-system/naxsi)
+- mod-naxsi 0.56 [link](https://github.com/nbs-system/naxsi)
 - mod-redis2 0.14 [link](https://github.com/openresty/redis2-nginx-module)
 - mod-set-misc 0.31 [link](https://github.com/openresty/set-misc-nginx-module)
 - mod-srcache 0.31 [link](https://github.com/openresty/srcache-nginx-module)
@@ -44,6 +44,7 @@ Additional modules
 
 
 # Changelog
+- 2020-04-20 bump up version nginx 1.17.10, njs 0.3.9
 - 2019-09-03 Add support HPACK, Dynamic TLS record, io_uring
 - 2019-08-28 bump up version nginx 1.17.3, njs 0.3.5, openssl 1.1.1c, cloudflare-zlib
 - 2019-06-14 bump up version nginx 1.17.0, njs 0.3.2, openssl 1.1.1c
