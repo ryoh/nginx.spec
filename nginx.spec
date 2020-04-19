@@ -25,16 +25,16 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.17.3
-%global         main_release        2%{?dist}
+%global         main_version        1.17.10
+%global         main_release        1%{?dist}
 
 %global         mod_njs_name        njs
-%global         mod_njs_version     0.3.5
+%global         mod_njs_version     0.3.9
 %global         mod_njs_pkgname     %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url         https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
 %global         ssl_name            openssl
-%global         ssl_version         OpenSSL_1_1_1c
+%global         ssl_version         OpenSSL_1_1_1f
 %global         ssl_pkgname         %{ssl_name}-%{ssl_version}
 %global         ssl_url             https://github.com/openssl/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
 
@@ -49,7 +49,7 @@
 %global         mod_ndk_url         https://github.com/simpl/%{mod_ndk_name}/archive/v%{mod_ndk_version}.tar.gz#/%{mod_ndk_pkgname}.tar.gz
 
 %global         mod_lua_name        lua-nginx-module
-%global         mod_lua_version     0.10.13
+%global         mod_lua_version     0.10.15
 %global         mod_lua_pkgname     %{mod_lua_name}-%{mod_lua_version}
 %global         mod_lua_url         https://github.com/openresty/%{mod_lua_name}/archive/v%{mod_lua_version}.tar.gz#/%{mod_lua_pkgname}.tar.gz
 
@@ -89,7 +89,7 @@
 %global         mod_redis2_url           https://github.com/openresty/%{mod_redis2_name}/archive/v%{mod_redis2_version}.tar.gz#/%{mod_redis2_pkgname}.tar.gz
 
 %global         mod_drizzle_name         drizzle-nginx-module
-%global         mod_drizzle_version      0.1.10
+%global         mod_drizzle_version      0.1.11
 %global         mod_drizzle_pkgname      %{mod_drizzle_name}-%{mod_drizzle_version}
 %global         mod_drizzle_url          https://github.com/openresty/%{mod_drizzle_name}/archive/v%{mod_drizzle_version}.tar.gz#/%{mod_drizzle_pkgname}.tar.gz
 
@@ -109,7 +109,7 @@
 %global         mod_stream_sts_url       https://github.com/vozlt/%{mod_stream_sts_name}/archive/v%{mod_stream_sts_version}.tar.gz#/%{mod_stream_sts_pkgname}.tar.gz
 
 %global         mod_naxsi_name           naxsi
-%global         mod_naxsi_version        0.55.3
+%global         mod_naxsi_version        0.56
 %global         mod_naxsi_pkgname        %{mod_naxsi_name}-%{mod_naxsi_version}
 %global         mod_naxsi_url            https://github.com/nbs-system/%{mod_naxsi_name}/archive/%{mod_naxsi_version}.tar.gz#/%{mod_naxsi_pkgname}.tar.gz
 
@@ -120,7 +120,7 @@
 %global         psol_url                 https://dl.google.com/dl/page-speed/psol/%{mod_pagespeed_version}-x64.tar.gz
 
 %global         mod_cache_purge_name     ngx_cache_purge
-%global         mod_cache_purge_version  2.4.2
+%global         mod_cache_purge_version  2.5
 %global         mod_cache_purge_pkgname  %{mod_cache_purge_name}-%{mod_cache_purge_version}
 %global         mod_cache_purge_url      https://github.com/nginx-modules/%{mod_cache_purge_name}/archive/%{mod_cache_purge_version}.tar.gz#/%{mod_cache_purge_pkgname}.tar.gz
 
@@ -140,7 +140,7 @@
 %global         mod_security_url         https://github.com/SpiderLabs/%{mod_security_name}/archive/v%{mod_security_version}.tar.gz#/%{mod_security_pkgname}.tar.gz
 
 %global         mod_geoip2_name          ngx_http_geoip2_module
-%global         mod_geoip2_version       3.2
+%global         mod_geoip2_version       3.3
 %global         mod_geoip2_pkgname       %{mod_geoip2_name}-%{mod_geoip2_version}
 %global         mod_geoip2_url           https://github.com/leev/%{mod_geoip2_name}/archive/%{mod_geoip2_version}.tar.gz#/%{mod_geoip2_pkgname}.tar.gz
 
@@ -203,7 +203,7 @@ Source220:      %{mod_geoip2_url}
 Patch101:       nginx_hpack_push_1.17.3.patch
 Patch102:       https://raw.githubusercontent.com/centminmod/centminmod/123.09beta01/patches/cloudflare/nginx__dynamic_tls_records_1015008.patch
 Patch103:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_io_uring.patch
-Patch200:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1b_ciphers.patch
+Patch200:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1e-dev_ciphers.patch
 
 Requires:       openssl
 Requires:       jemalloc
@@ -525,14 +525,14 @@ popd
 
 
 %build
-CFLAGS="${CFLAGS:--O3 -march=native -fuse-ld=gold %{optflags} $(pcre-config --cflags) -Wno-error=strict-aliasing -Wformat -Werror=format-security -Wimplicit-fallthrough=0 -fcode-hoisting -Wno-cast-function-type -Wno-format-extra-args -Wno-deprecated-declarations -gsplit-dwarf}"; export CFLAGS;
+CFLAGS="${CFLAGS:-%{optflags} -O3 -march=native -fuse-ld=gold $(pcre-config --cflags) -Wno-error=strict-aliasing -Wformat -Werror=format-security -Wimplicit-fallthrough=0 -fcode-hoisting -Wno-cast-function-type -Wno-format-extra-args -Wno-deprecated-declarations -gsplit-dwarf}"; export CFLAGS;
+export CXXFLAGS="${CXXFLAGS:-${CFLAGS}}"
 LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
 
 export LUAJIT_LIB="%{_libdir}"
 export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
 
-#%%enable_devtoolset8
-source scl_source enable devtoolset-8 ||:
+%enable_devtoolset9
 
 ./configure \
   --with-cc-opt="${CFLAGS} -DTCP_FASTOPEN=23" \
@@ -951,6 +951,9 @@ esac
 
 
 %changelog
+* Mon Apr 20 2020 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.10-0
+- Bump up version nginx 1.17.3 -> 1.17.10
+- Bump up version njs 0.3.4 -> 0.3.9
 * Tue Sep 03 2019 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.3-2
 - Add support HPACK enc patch
 - Add support dynamic tls record patch
