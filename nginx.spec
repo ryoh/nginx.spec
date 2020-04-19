@@ -525,18 +525,17 @@ popd
 
 
 %build
-CFLAGS="${CFLAGS:--O3 -march=native -fuse-ld=gold %{optflags} $(pcre-config --cflags) -Wno-error=strict-aliasing -Wformat -Werror=format-security -Wimplicit-fallthrough=0 -fcode-hoisting -Wno-cast-function-type -Wno-format-extra-args -Wno-deprecated-declarations -gsplit-dwarf}"; export CFLAGS;
-LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
+cc_opt="%{optflags} $(pcre-config --cflags) -fuse-ld=gold -fcode-hoisting -Wno-error=strict-aliasing -Wformat -Werror=format-security -Wimplicit-fallthrough=0 -Wno-deprecated-declarations -gsplit-dwarf -DTCP_FASTOPEN=23"
+ld_opt="${RPM_LD_FLAGS} -Wl,-E -ljemalloc"
 
 export LUAJIT_LIB="%{_libdir}"
 export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
 
-#%%enable_devtoolset8
-source scl_source enable devtoolset-8 ||:
+%enable_devtoolset9
 
 ./configure \
-  --with-cc-opt="${CFLAGS} -DTCP_FASTOPEN=23" \
-  --with-ld-opt="${LDFLAGS}" \
+  --with-cc-opt="${cc_opt}" \
+  --with-ld-opt="${ld_opt}" \
   --with-openssl=./%{ssl_name} \
   --with-openssl-opt="enable-ec_nistp_64_gcc_128 enable-tls1_3" \
   --with-zlib=./%{zlib_name} \
@@ -590,8 +589,6 @@ source scl_source enable devtoolset-8 ||:
   --with-stream_geoip_module=dynamic \
   --with-stream_ssl_preread_module \
   --add-dynamic-module=%{mod_ndk_pkgname} \
-  --add-dynamic-module=%{mod_lua_pkgname} \
-  --add-dynamic-module=%{mod_lua_upstream_pkgname} \
   --add-dynamic-module=%{mod_headers_more_pkgname} \
   --add-dynamic-module=%{mod_echo_pkgname} \
   --add-dynamic-module=%{mod_set_misc_pkgname} \
@@ -600,7 +597,6 @@ source scl_source enable devtoolset-8 ||:
   --add-dynamic-module=%{mod_redis2_pkgname} \
   --add-dynamic-module=%{mod_vts_pkgname} \
   --add-dynamic-module=%{mod_security_pkgname} \
-  --add-dynamic-module=%{mod_naxsi_pkgname}/naxsi_src \
   --add-dynamic-module=%{mod_pagespeed_pkgname} \
   --add-dynamic-module=%{mod_cache_purge_pkgname} \
   --add-dynamic-module=%{mod_njs_pkgname}/nginx \
@@ -609,6 +605,9 @@ source scl_source enable devtoolset-8 ||:
   --add-dynamic-module=%{mod_stream_sts_pkgname} \
   --add-dynamic-module=%{mod_geoip2_pkgname} \
 
+#  --add-dynamic-module=%{mod_lua_pkgname} \
+#  --add-dynamic-module=%{mod_lua_upstream_pkgname} \
+#  --add-dynamic-module=%{mod_naxsi_pkgname}/naxsi_src \
 #touch %{ssl_name}/.openssl/include/openssl/ssl.h
 
 %make_build
@@ -872,13 +871,13 @@ esac
 
 %files mod-http-lua
 %{nginx_moddir}/ndk_http_module.so
-%{nginx_moddir}/ngx_http_lua_module.so
+#%{nginx_moddir}/ngx_http_lua_module.so
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ndk_http_module.conf
-%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_lua_module.conf
+#%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_lua_module.conf
 
 %files mod-http-lua-upstream
-%{nginx_moddir}/ngx_http_lua_upstream_module.so
-%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_lua_upstream_module.conf
+#%{nginx_moddir}/ngx_http_lua_upstream_module.so
+#%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_lua_upstream_module.conf
 
 %files mod-headers-more
 %{nginx_moddir}/ngx_http_headers_more_filter_module.so
@@ -905,8 +904,8 @@ esac
 %config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_redis2_module.conf
 
 %files mod-naxsi
-%{nginx_moddir}/ngx_http_naxsi_module.so
-%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_naxsi_module.conf
+#%{nginx_moddir}/ngx_http_naxsi_module.so
+#%config(noreplace) %{nginx_confdir}/conf.modules.d/ngx_http_naxsi_module.conf
 
 %files mod-vts
 %{nginx_moddir}/ngx_http_vhost_traffic_status_module.so
