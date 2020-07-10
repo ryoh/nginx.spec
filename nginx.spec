@@ -33,11 +33,6 @@
 %global         mod_njs_pkgname     %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url         https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
-%global         ssl_name            openssl
-%global         ssl_version         OpenSSL_1_1_1f
-%global         ssl_pkgname         %{ssl_name}-%{ssl_version}
-%global         ssl_url             https://github.com/openssl/%{ssl_name}/archive/%{ssl_version}.tar.gz#/%{ssl_pkgname}.tar.gz
-
 %global         zlib_name           zlib
 %global         zlib_version        1.2.8
 %global         zlib_pkgname        %{zlib_name}-%{zlib_version}
@@ -129,11 +124,6 @@
 %global         mod_brotli_pkgname       %{mod_brotli_name}-%{mod_brotli_version}
 %global         mod_brotli_url           https://github.com/eustas/%{mod_brotli_name}/archive/v%{mod_brotli_version}.tar.gz#/%{mod_brotli_pkgname}.tar.gz
 
-%global         brotli_name              brotli
-%global         brotli_version           1.0.4
-%global         brotli_pkgname           %{brotli_name}-%{brotli_version}
-%global         brotli_url               https://github.com/google/%{brotli_name}/archive/v%{brotli_version}.tar.gz#/%{brotli_pkgname}.tar.gz
-
 %global         mod_security_name        ModSecurity-nginx
 %global         mod_security_version     1.0.0
 %global         mod_security_pkgname     %{mod_security_name}-%{mod_security_version}
@@ -174,7 +164,6 @@ Source20:       nginx-http-security_headers.conf
 Source21:       nginx-http-proxy_headers.conf
 Source50:       00-default.conf
 
-Source100:      %{ssl_url}
 Source101:      %{zlib_url}
 
 Source200:      %{mod_ndk_url}
@@ -194,18 +183,14 @@ Source213:      %{psol_url}
 Source214:      %{mod_cache_purge_url}
 Source215:      %{mod_njs_url}
 Source216:      %{mod_brotli_url}
-Source217:      %{brotli_url}
 
 Source218:      %{mod_sts_url}
 Source219:      %{mod_stream_sts_url}
 Source220:      %{mod_geoip2_url}
 
 Patch101:       nginx_hpack_push_1.17.3.patch
-Patch102:       https://raw.githubusercontent.com/centminmod/centminmod/123.09beta01/patches/cloudflare/nginx__dynamic_tls_records_1015008.patch
-Patch103:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_io_uring.patch
-Patch200:       https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1e-dev_ciphers.patch
 
-Requires:       openssl
+Requires:       openssl11-libs
 Requires:       jemalloc
 Requires(pre):  shadow-utils
 Requires(post):   systemd 
@@ -218,6 +203,7 @@ BuildRequires:  zlib-devel pcre-devel
 BuildRequires:  apr apr-util
 BuildRequires:  jemalloc-devel
 BuildRequires:  cmake ninja-build golang
+BuildRequires:  openssl11-devel
 
 
 %description
@@ -438,6 +424,8 @@ BuildRequires:  expect-devel libedit-devel
 Summary:        nginx brotli module
 Release:        %{mod_brotli_version}.%{main_release}
 Requires:       %{name} = %{version}-%{main_release}
+Requires:       brotli
+BuildRequires:  brotli-devel
 
 %description mod-brotli
 %{summary}.
@@ -472,10 +460,6 @@ BuildRequires:  libmaxminddb-devel
 %patch101 -p1 -b.hpack_push
 %endif
 
-%if %{with dynamic_tls}
-%patch102 -p1 -b.dynamic_tls
-%endif
-
 %if %{with io_uring}
 %patch103 -p1 -b.io_uring
 %endif
@@ -507,16 +491,8 @@ popd
 
 # Brotli
 %__tar xf %{SOURCE216}
-pushd %{mod_brotli_pkgname}/deps
-%__tar xf %{SOURCE217} -C brotli --strip-components 1
-popd
-
-# SSL
-%__mkdir %{ssl_name}
-%__tar xf %{SOURCE100} -C %{ssl_name} --strip-components 1
-pushd %{ssl_name}
-#$%__patch -z.backup -p1 <%{PATCH200}
-%patch200 -z.backup -p1
+pushd %{mod_brotli_pkgname}
+sed -i -e 's|/usr/local|/usr|' config
 popd
 
 # Cloudflare Zlib
@@ -525,9 +501,9 @@ popd
 
 
 %build
-CFLAGS="${CFLAGS:-%{optflags} -O3 -march=native -fuse-ld=gold $(pcre-config --cflags) -Wno-error=strict-aliasing -Wformat -Werror=format-security -Wimplicit-fallthrough=0 -fcode-hoisting -Wno-cast-function-type -Wno-format-extra-args -Wno-deprecated-declarations -gsplit-dwarf}"; export CFLAGS;
+CFLAGS="${CFLAGS:-%{optflags} -O3 -march=native -fuse-ld=gold $(pcre-config --cflags) $(pkg-config openssl11 --cflags-only-I) -Wno-error=strict-aliasing -Wformat -Werror=format-security -Wimplicit-fallthrough=0 -fcode-hoisting -Wno-cast-function-type -Wno-format-extra-args -Wno-deprecated-declarations -gsplit-dwarf}"; export CFLAGS;
 export CXXFLAGS="${CXXFLAGS:-${CFLAGS}}"
-LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc}"; export LDFLAGS;
+LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS} -Wl,-E -ljemalloc $(pkg-config openssl11 --libs-only-L)}"; export LDFLAGS;
 
 export LUAJIT_LIB="%{_libdir}"
 export LUAJIT_INC="$(pkg-config --cflags-only-I luajit | sed -e 's/-I//')"
@@ -538,7 +514,6 @@ source scl_source enable devtoolset-9 ||:
 ./configure \
   --with-cc-opt="${CFLAGS} -DTCP_FASTOPEN=23" \
   --with-ld-opt="${LDFLAGS}" \
-  --with-openssl=./%{ssl_name} \
   --with-openssl-opt="enable-ec_nistp_64_gcc_128 enable-tls1_3" \
   --with-zlib=./%{zlib_name} \
   %{?with_http_v2_hpack_enc:--with-http_v2_hpack_enc} \
@@ -610,7 +585,6 @@ source scl_source enable devtoolset-9 ||:
   --add-dynamic-module=%{mod_stream_sts_pkgname} \
   --add-dynamic-module=%{mod_geoip2_pkgname} \
 
-#touch %{ssl_name}/.openssl/include/openssl/ssl.h
 
 %make_build
 
@@ -703,10 +677,6 @@ done
 %{__cp} -Rp %{_builddir}/%{nginx_source_name} %{buildroot}%{_usrsrc}/%{nginx_source_name}
 
 pushd %{buildroot}%{_usrsrc}
-
-pushd ./%{nginx_source_name}/%{ssl_name}
-%{__make} clean ||:
-popd
 
 pushd ./%{nginx_source_name}
 %{__make} clean
@@ -952,6 +922,14 @@ esac
 
 
 %changelog
+* Fri Jul 10 2020 Ryoh Kawai <kawairyoh@gmail.com> - 1.19.1-0
+- Bump up version nginx 1.17.10 -> 1.19.1
+- Bump up version njs 0.3.9 -> 0.4.2
+- Bump up version mod_ndk 0.3.0 -> 0.3.1
+- Bump up version mod_lua 0.10.15 -> 0.10.17
+- Disable HPACK, Dynamic TLS
+- Replace OpenSSL 1.1.1 (Official to epel package)
+- Replace Brotli (Github to epel package)
 * Mon Apr 20 2020 Ryoh Kawai <kawairyoh@gmail.com> - 1.17.10-0
 - Bump up version nginx 1.17.3 -> 1.17.10
 - Bump up version njs 0.3.4 -> 0.3.9
