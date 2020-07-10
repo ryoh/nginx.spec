@@ -26,7 +26,7 @@
 
 %global         pkg_name            nginx-mainline
 %global         main_version        1.19.1
-%global         main_release        1%{?dist}
+%global         main_release        2%{?dist}
 
 %global         mod_njs_name        njs
 %global         mod_njs_version     0.4.2
@@ -922,6 +922,8 @@ esac
 
 
 %changelog
+* Fri Jul 10 2020 Ryoh Kawai <kawairyoh@gmail.com> - 1.19.1-2
+- Updated
 * Fri Jul 10 2020 Ryoh Kawai <kawairyoh@gmail.com> - 1.19.1-0
 - Bump up version nginx 1.17.10 -> 1.19.1
 - Bump up version njs 0.3.9 -> 0.4.2
