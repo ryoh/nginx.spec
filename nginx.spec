@@ -25,11 +25,11 @@
 %global         nginx_source_name      nginx-%{version}
 
 %global         pkg_name            nginx-mainline
-%global         main_version        1.17.10
+%global         main_version        1.19.1
 %global         main_release        1%{?dist}
 
 %global         mod_njs_name        njs
-%global         mod_njs_version     0.3.9
+%global         mod_njs_version     0.4.2
 %global         mod_njs_pkgname     %{mod_njs_name}-%{mod_njs_version}
 %global         mod_njs_url         https://hg.nginx.org/%{mod_njs_name}/archive/%{mod_njs_version}.tar.gz#/%{mod_njs_pkgname}.tar.gz
 
@@ -44,12 +44,12 @@
 %global         zlib_url            https://github.com/cloudflare/%{zlib_name}/archive/v%{zlib_version}.tar.gz#/%{zlib_pkgname}.tar.gz
 
 %global         mod_ndk_name        ngx_devel_kit
-%global         mod_ndk_version     0.3.0
+%global         mod_ndk_version     0.3.1
 %global         mod_ndk_pkgname     %{mod_ndk_name}-%{mod_ndk_version}
 %global         mod_ndk_url         https://github.com/simpl/%{mod_ndk_name}/archive/v%{mod_ndk_version}.tar.gz#/%{mod_ndk_pkgname}.tar.gz
 
 %global         mod_lua_name        lua-nginx-module
-%global         mod_lua_version     0.10.15
+%global         mod_lua_version     0.10.17
 %global         mod_lua_pkgname     %{mod_lua_name}-%{mod_lua_version}
 %global         mod_lua_url         https://github.com/openresty/%{mod_lua_name}/archive/v%{mod_lua_version}.tar.gz#/%{mod_lua_pkgname}.tar.gz
 
@@ -144,8 +144,8 @@
 %global         mod_geoip2_pkgname       %{mod_geoip2_name}-%{mod_geoip2_version}
 %global         mod_geoip2_url           https://github.com/leev/%{mod_geoip2_name}/archive/%{mod_geoip2_version}.tar.gz#/%{mod_geoip2_pkgname}.tar.gz
 
-%bcond_without  http_v2_hpack_enc
-%bcond_without  dynamic_tls
+%bcond_with     http_v2_hpack_enc
+%bcond_with     dynamic_tls
 %bcond_with     io_uring
 %bcond_with     source
 
